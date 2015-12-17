@@ -1,5 +1,5 @@
 ---
-layout: page
+layout: tag_page
 title: About
 permalink: /about/
 ---
