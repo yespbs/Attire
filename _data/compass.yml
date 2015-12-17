@@ -3,7 +3,7 @@ require:
 - jekyll-compass
 project_path: /Users/dsv/Sites/repositories/attire
 http_path: /
-css_dir: css
+css_dir: assets/css
 sass_dir: _compass
-images_dir: images
-javascripts_dir: javascripts
+images_dir: assets/images
+javascripts_dir: assets/javascripts
