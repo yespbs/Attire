@@ -9,7 +9,7 @@
 title: Attire
 email: david.sosa.valdes@gmail.com
 description: > # this means to ignore newlines until "baseurl:"
-  An implementation of Twig template engine combined with Assetic asset management framework for CodeIgniter 3.0.
+  An implementation of template engine combined with asset management for CodeIgniter 3.0.
 baseurl: "/Attire" # the subpath of your site, e.g. /blog
 url: "https://github.com/davidsosavaldes" # the base hostname & protocol for your site
 github_username: davidsosavaldes
@@ -19,3 +19,5 @@ markdown: kramdown
 
 sass:
     style: :compressed
+
+include: ['_pages']

@@ -1,23 +1,41 @@
 ---
 layout: default
 ---
-
-<div class="home">
-
-  <h1 class="page-heading">Posts</h1>
-
-  <ul class="post-list">
-    {% for post in site.posts %}
-      <li>
-        <span class="post-meta">{{ post.date | date: "%b %-d, %Y" }}</span>
-
-        <h2>
-          <a class="post-link" href="{{ post.url | prepend: site.baseurl }}">{{ post.title }}</a>
-        </h2>
-      </li>
-    {% endfor %}
-  </ul>
-
-  <p class="rss-subscribe">subscribe <a href="{{ "/feed.xml" | prepend: site.baseurl }}">via RSS</a></p>
-
+<div class="jumbotron hero">
+  <p>{{site.description}}</p>
+  <p><a class="btn btn-primary btn-lg" href="#"  id="install-latest" role="button">Install Latest Build</a></p>
 </div>
+<div class="text-center">
+  <p class="lead">Skills.</p>
+  <p>Built on top of great technology.</p>
+</div>
+<hr style="border:none; margin-bottom:30px;">
+<div class="container">
+  <div class="row text-center">
+    <div class="col-sm-3">
+      <i class="fa fa-clone fa-3x fa-fw"></i>
+      <h4>Solid Base</h4>
+      <p>Built with Twig Engine and Assetic Framework.</p>
+    </div>
+    <div class="col-sm-3">
+      <i class="fa fa-sliders fa-3x fa-fw"></i>
+      <h4>Highly Customizable</h4>
+      <p>Easily customize Attire to work exactly how you want it to.</p>
+    </div>    
+    <div class="col-sm-3">
+      <i class="fa fa-expand fa-3x fa-fw"></i>
+      <h4>Extendable</h4>
+      <p>The template system allows you to build multiple themes and layouts.</p>
+    </div>
+    <div class="col-sm-3">
+      <i class="fa fa-shield fa-3x fa-fw"></i>
+      <h4>Secure</h4>
+      <p>Evaluate untrusted template code using a sandbox mode and output escaping.</p>
+    </div>
+  </div>
+</div>
+<hr style="width:20%;">
+<div class="text-center">
+  <p class="lead" style="padding:0 25%;">A Library for fast development and maintenance of structured templates, layouts and assets.</p>
+</div>
+<hr style="width:20%;">
