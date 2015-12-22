@@ -23,12 +23,13 @@ a.btn#install-latest {
 }
 
 .motto {
-    margin: 50px auto;
+    padding: 50px;
 }
 
 .motto h4 {
 	font-weight: 200;
 	font-size: 21px;
+    padding: 0 25% 0 25%;
 }
 
 .contribute {
@@ -48,4 +49,16 @@ a.btn#install-latest {
 footer {
     text-align: center;
     padding: 50px;
+}
+
+.navbar-default .navbar-toggle {
+    border-color: transparent;
+}
+
+.navbar-default .navbar-toggle:hover, .navbar-default .navbar-toggle:focus {
+    background-color: $brand-primary;
+}
+
+.navbar-default .navbar-toggle .icon-bar {
+    background-color: white;
 }

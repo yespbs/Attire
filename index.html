@@ -14,8 +14,8 @@ layout: default
 {% if site.data.features %}
   <section class="features">
     <div class="features-title">
-      <h4>Features.</h4>
-      <p class="lead">Built on top of great technology.</p>
+      <h4>Features</h4>
+      <p>Built on top of great technology.</p>
     </div>
     {% assign features_length = site.data.features | size %}
     {% assign col_size = 12 | divided_by: features_length | round %}
@@ -31,12 +31,30 @@ layout: default
   </section>
   <hr>
 {% endif %}
-<section class="motto">
-  <div class="text-center">
-    <h4>A Library for fast development and maintenance of structured templates, layouts and assets.</h4>
-  </div>
-</section>
-<hr>
+{% if site.data.project.motto %}
+  <section class="motto">
+    <div class="text-center">
+      <h4>{{ site.data.project.motto }}</h4>
+    </div>
+  </section>
+  <hr>
+{% endif %}
+{% if site.data.project.demo %}
+  <section class="demo">
+    <div class="text-center">
+      <h4>Demo.</h4>
+      <p>{{ site.data.project.demo.description }}</p>
+    </div>
+    <div class="row">
+      <div class="col-sm-8 col-sm-offset-2">
+        <div class="embed-responsive embed-responsive-16by9">
+          <iframe src="{{ site.data.project.demo.url }}" allowfullscreen></iframe>
+        </div>
+      </div>
+    </div>
+  </section>
+  <hr>
+{% endif %}
 <section class="examples">
   <div class="row text-center">
     <h4>Templates</h4>
@@ -53,7 +71,7 @@ layout: default
           </div>
           <div id="collapseOne" class="panel-collapse collapse" role="tabpanel" aria-labelledby="headingOne">
             <div class="panel-body">
-              Anim pariatur cliche reprehenderit, enim eiusmod high life accusamus terry richardson ad squid. 3 wolf moon officia aute, non cupidatat skateboard dolor brunch. Food truck quinoa nesciunt laborum eiusmod. Brunch 3 wolf moon tempor, sunt aliqua put a bird on it squid single-origin coffee nulla assumenda shoreditch et. Nihil anim keffiyeh helvetica, craft beer labore wes anderson cred nesciunt sapiente ea proident. Ad vegan excepteur butcher vice lomo. Leggings occaecat craft beer farm-to-table, raw denim aesthetic synth nesciunt you probably haven't heard of them accusamus labore sustainable VHS.
+              ...
             </div>
           </div>
         </div>
@@ -62,12 +80,19 @@ layout: default
   </div>
 </section>
 <section class="contribute">
-  <div class="row well text-center">
+  <div class="row well text-center" style="padding:50px;">
     <h4>Contribute</h4>
     <p>We love when developers join the project, check how you can help.</p>
-    <div class="btn-group btn-group-lg" role="group" aria-label="Contribute button group">
-      <button type="button" class="btn btn-default"><i class="fa fa-github"></i> Open an issue</button>
-      <button type="button" class="btn btn-default">Submit theme</button>
+    <div class="row" style="margin-top:40px;">
+      <div class="col-sm-2 col-sm-offset-3">
+        <button type="button" class="btn btn-default btn-block btn-lg">Open an issue</button>
+      </div>
+      <div class="col-sm-2">
+        <button type="button" class="btn btn-default btn-block btn-lg">Shout a tweet</button>
+      </div>
+      <div class="col-sm-2">
+        <button type="button" class="btn btn-default btn-block btn-lg">Submit theme</button>
+      </div>
     </div>
   </div>
 </section>

@@ -1,0 +1,8 @@
+url: https://github.com/davidsosavaldes/Attire
+issues: https://github.com/davidsosavaldes/Attire/issues
+releases: https://github.com/davidsosavaldes/Attire/wiki/Release-Notes
+motto: "A Library for fast development and maintenance of structured templates, layouts and assets."
+version: 1.3.0
+demo:
+  url: "https://www.youtube-nocookie.com/embed/SwAzluknlNI?rel=0&amp;showinfo=0&amp;hd=1"
+  description: Fronted arquitecture in less of 2 minutes.
