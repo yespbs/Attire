@@ -3,18 +3,20 @@
 ---
 @charset "utf-8";
 
-$jumbotron-bg: #006EAD !default;
-$jumbotron-color: #ffffff !default;
-$jumbotron-padding: 50px !default;
-$brand-primary: darken($jumbotron-bg, 1.5%) !default; // #337ab7
-$navbar-default-bg: $jumbotron-bg !default;
-$navbar-default-border: transparent !default;
-$navbar-default-brand-color: #ffffff !default;
-$navbar-default-brand-hover-color: #ffffff !default;
-$navbar-default-brand-hover-bg: $brand-primary !default;
-$navbar-default-link-color: #ffffff !default;
-$navbar-default-link-hover-color: #ffffff !default;
-$navbar-default-link-hover-bg: $brand-primary !default;
+$jumbotron-bg      : #006EAD !default;
+$jumbotron-color   : #ffffff !default;
+$jumbotron-padding : 50px !default;
+
+$brand-primary: darken($jumbotron-bg, 1.5%) !default;
+
+$navbar-default-bg                : $jumbotron-bg !default;
+$navbar-default-border            : transparent !default;
+$navbar-default-brand-color       : #ffffff !default;
+$navbar-default-brand-hover-color : #ffffff !default;
+$navbar-default-brand-hover-bg    : $brand-primary !default;
+$navbar-default-link-color        : #ffffff !default;
+$navbar-default-link-hover-color  : #ffffff !default;
+$navbar-default-link-hover-bg     : $brand-primary !default;
 
 @import "bootstrap";
 
@@ -32,8 +34,6 @@ $navbar-default-link-hover-bg: $brand-primary !default;
         @content;
     }
 }
-
-
 
 // Import partials from `sass_dir` (defaults to `_sass`)
 @import
