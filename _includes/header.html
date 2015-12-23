@@ -17,6 +17,12 @@
               <li><a href="{{ my_page.url | prepend: site.baseurl }}">{{ my_page.title }}</a></li>
             {% endif %}
           {% endfor %}
+          {% for menu in site.data.menu %}
+            {% if menu.title %}
+              <li><a href="{{ menu.url }}">{{ menu.title }}</a></li>
+            {% endif %}
+          {% endfor %}
+          <li><a href="{{ site.url }}{{ site.baseurl }}">Github</a></li>
         </ul>
       </div>
     </div>
