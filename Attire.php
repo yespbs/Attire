@@ -26,7 +26,7 @@
  * @subpackage	Libraries 
  * @category	Libraries
  * @author	David Sosa Valdes
- * @link	https://github.com/davidsosavaldes/Attire
+ * @link		https://github.com/davidsosavaldes/Attire
  * @copyright   Copyright (c) 2014, David Sosa Valdes.
  * @version 	2.0.0
  *
