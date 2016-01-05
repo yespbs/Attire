@@ -5,13 +5,13 @@
  *
  * An open source application development framework for PHP
  *
- * @package		CodeIgniter
- * @author		EllisLab Dev Team
+ * @package	CodeIgniter
+ * @author	EllisLab Dev Team
  * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
  * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
- * @license		http://opensource.org/licenses/MIT	MIT License
- * @link		http://codeigniter.com
- * @since		Version 1.0.0
+ * @license	http://opensource.org/licenses/MIT	MIT License
+ * @link	http://codeigniter.com
+ * @since	Version 1.0.0
  */
 
 /**
@@ -22,11 +22,11 @@
  * CI view there are individual CSS, Javascript and View files that correlate to it and 
  * this structure is conected with the Twig Engine.
  *
- * @package		CodeIgniter
+ * @package	CodeIgniter
  * @subpackage	Libraries 
  * @category	Libraries
- * @author		David Sosa Valdes
- * @link		https://gitlab.com/david-sosa-valdes/attire
+ * @author	David Sosa Valdes
+ * @link		https://github.com/davidsosavaldes/Attire
  * @copyright   Copyright (c) 2014, David Sosa Valdes.
  * @version 	2.0.0
  *
