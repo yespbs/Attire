@@ -1,40 +1,26 @@
-<?php if ( ! defined('BASEPATH')) exit('No direct script access allowed');
-
-use Assetic\AssetManager;
-use Assetic\AssetWriter;
-use Assetic\Asset\GlobAsset;
-use Assetic\Asset\AssetCollection;
-use Assetic\Asset\FileAsset;
-use Assetic\Factory\AssetFactory;
-use Assetic\Factory\LazyAssetManager;
-use Assetic\Extension\Twig\TwigFormulaLoader;
-use Assetic\Extension\Twig\TwigResource;
-use Assetic\Extension\Twig\AsseticExtension;
-use Assetic\FilterManager;
-use Assetic\Filter\CssRewriteFilter;
+<?php defined('BASEPATH') OR exit('No direct script access allowed');
 
 /**
  * CodeIgniter
  *
  * An open source application development framework for PHP
  *
- * @package	CodeIgniter
- * @author	EllisLab Dev Team
+ * @package		CodeIgniter
+ * @author		EllisLab Dev Team
  * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
  * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
- * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
- * @since	Version 1.0.0
- * @filesource
+ * @license		http://opensource.org/licenses/MIT	MIT License
+ * @link		http://codeigniter.com
+ * @since		Version 1.0.0
  */
 
 /**
  * CodeIgniter Attire
  *
- * Templating with this class is done by layering the standard CI view system with and extending 
- * it to asset management with Assetic. The basic idea is that for every single CI view 
- * there are individual CSS, Javascript and View files that correlate to it and this 
- * structure is conected with the Twig Class.
+ * Templating with this class is done by layering the standard CI view system and extending 
+ * it with Brackets-PHP (pipeline asset management). The basic idea is that for every single 
+ * CI view there are individual CSS, Javascript and View files that correlate to it and 
+ * this structure is conected with the Twig Engine.
  *
  * @package		CodeIgniter
  * @subpackage	Libraries 
@@ -42,295 +28,438 @@ use Assetic\Filter\CssRewriteFilter;
  * @author		David Sosa Valdes
  * @link		https://gitlab.com/david-sosa-valdes/attire
  * @copyright   Copyright (c) 2014, David Sosa Valdes.
- * @version 	1.1.0
+ * @version 	2.0.0
  *
  */
 
 class Attire
 {
 	/**
-	 * Default bundle path
+	 * Theme directory path
 	 * @var string
 	 */
-	protected $_bundle_path;
+	protected $theme_path = NULL;
 
 	/**
-	 * CodeIgniter required functions
+	 * Assets directory path
+	 * @var string
+	 */
+	protected $assets_path = NULL;
+
+	/**
+	 * Brackets-PHP pipeline paths
 	 * @var array
 	 */
-	protected $_ci_functions = array();
+	protected $pipeline_paths = array();
 
 	/**
-	 * Default themes path
-	 * @var string
-	 */
-	protected $_theme_path = APPPATH.'themes/';
-
-	/**
-	 * Default assets path
-	 * @var string
-	 */
-	protected $_assets_path = FCPATH.'assets/';
-	/**
-	 * [$_assets description]
+	 * Twig valid extensions
 	 * @var array
 	 */
-	protected $_assets = array();
+	protected $extensions = array();
 
 	/**
-	* Restricted view files mode
-	* @var bool
-	*/
-	protected $_restricted_mode = FALSE;
-	
-	/**
-	 * Twig current lexer established
-	 * @var array
-	 */
-	protected $_current_lexer = array();
-
-	/**
-	 * Master layout template name
+	 * Twig files extension
 	 * @var string
 	 */
-	protected $_default_template = 'theme';
+	protected $file_extension = '.twig';	
 
 	/**
-	 * Twig_Environment auto reload attr 
+	 * Twig Environment options
+	 * @var array
+	 */
+	protected $environment_options = array();
+
+	/**
+	 * Twig external functions 
+	 * @var array
+	 */
+	protected $functions = array();
+
+	/**
+	 * Twig global variables
+	 * @var array
+	 */
+	protected $global_vars = array();
+
+	/**
+	 * Enable the Twig built-in autoloader
 	 * @var boolean
 	 */
-	protected $_auto_reload = FALSE;
+	protected $auto_register = FALSE;
 
 	/**
-	 * Codeigniter directives used as global functions.
-	 * @var mixed
-	 */
-	protected $_directives = array();
-
-	/**
-	 * Theme selected as interface
+	 * Default theme 
 	 * @var string
 	 */
-	protected $_theme;
+	protected $theme = NULL;
 
 	/**
-	 * Set of views used Twig_Filesystem
+	 * Default master template (without extension)
+	 * @var string
+	 */
+	protected $template = 'master';
+
+	/**
+	 * Twig Loader
+	 * @var object
+	 */
+	private $_loader = NULL;
+	/**
+	 * Twig Environment
+	 * @var object
+	 */
+	private $_environment = NULL;	
+
+	/**
+	 * Default layout (without extension)
+	 * @var string
+	 */
+	protected $_layout = NULL;
+
+	/**
+	 * Stored views with their params
 	 * @var array
 	 */
 	protected $_views = array();
 
 	/**
-	 * The syntax set used for personalize Twig_Lexer
-	 * @var array
-	 */
-	protected $_available_lexer = array('tag_comment','tag_block','tag_variable');
-
-	/**
-	 * Set of global params
-	 * @var array
-	 */
-	protected $_params = array();
-
-	/**
-	 * Twig file extension
+	 * Brackets-PHP: Cache directory base path
 	 * @var string
 	 */
-	protected $_extension = '.twig';
+	protected $_cache_base = NULL;
 
 	/**
-	 * Twig layout childs
-	 * @var array
-	 */
-	protected $_childs = array();
-
-	/**
-	 * Set of global paths
-	 * @var array
-	 */
-	protected $_paths = array();
-
-	/**
-	 * Twig_Environment debug mode
-	 * @var boolean
-	 */
-	protected $_debug = FALSE;
-
-	/**
-	 * Twig_Environment object
+	 * CI Instance
 	 * @var object
 	 */
-	protected $_environment;
+	private $_CI;
 
 	/**
-	 * Twig_Loader_Filesystem object
-	 * @var object
+	 * Constructor
+	 * 
+	 * @param array $config - library params
 	 */
-	protected $_loader;
-
-	/**
-	 * CI Singleton
-	 * @var [type]
-	 */
-  	protected $_ci;
-
-  	/**
-  	 * Class Constuctor
-  	 *
-  	 * Loads the CI Instance, Filesystem and Paths.
-  	 * 
-  	 * @param array $config [description]
-  	 * @return void 
-  	 */
-	public function __construct($config = array())
+	public function __construct(array $config = array())
 	{
-        $this->_ci =& get_instance();
-        Twig_Autoloader::register();
-        try 
+		// Load CI Instance
+        $this->_CI =& get_instance();
+        // Load CI required libraries, helpers, config files, etc.
+        $this->_CI->load->helper('url');
+        // Set the default Twig environment options
+        $this->environment_options = array(
+			'charset'             => 'utf-8',
+			'base_template_class' => 'Twig_Template',
+			'cache'               => FALSE,
+			'auto_reload'         => FALSE,
+			'strict_variables'    => FALSE,
+			'autoescape'          => TRUE	
+		);
+		// Set the default Twig extensions
+		$this->extensions = array(
+			'core'      => 'Twig_Extension_Core',
+			'escaper'   => 'Twig_Extension_Escaper',
+			'sandbox'   => 'Twig_Extension_Sandbox',
+			'profiler'  => 'Twig_Extension_Profiler',
+			'optimizer' => 'Twig_Extension_Optimizer'
+		);
+		// Set the pipeline assets paths
+		$this->pipeline_paths = array(
+			'template' => array(
+				'directories' => array(
+					'%theme%/assets/',
+					'_shared/assets/'
+				),
+				'prefixes' => array(
+					'js' => 'javascripts',
+					'css' => 'stylesheets',
+					'img' => 'images',
+					'font' => 'fonts'
+				)
+			),
+			'external' => array(
+				'directories' => array(
+					'vendor/bower/',
+					'vendor/components/'
+				)
+			)
+		);
+        // Set all params
+        $this->_set($config);
+        // If not set the library paths, set it (required)
+        empty($this->theme_path)  && $this->theme_path = APPPATH.'themes/';
+        empty($this->assets_path) && $this->assets_path = FCPATH.'assets/';
+        // Add trailing slash if not set
+        $this->theme_path  = rtrim($this->theme_path, '/').'/';
+        $this->assets_path = rtrim($this->assets_path, '/').'/';
+        // Set absolute paths of pipeline assets:
+        array_walk($this->pipeline_paths['template']['directories'], function(&$path){ 
+        	$path = $this->theme_path.rtrim($path,'/').'/';
+        });
+        // Set pipeline cache path (required)
+        $this->pipeline_paths['CACHE_DIRECTORY'] = $this->assets_path;
+        $this->_cache_base = basename($this->assets_path).'/';
+        // Set if we need the Twig built-in autoloader
+        if ($this->auto_register !== FALSE) 
         {
-        	# Set config params
-	        $this->_ci->load->config('attire', FALSE, TRUE); 
-        	$this->_set($config);
-
-        	# Attire use URL helper by default
-        	$this->_ci->load->helper('url');
-        	$this->_ci_functions['base_url'] = function($path = ""){
-        		return base_url($path);
-        	};
-
-			# Set absolute paths of assets and theme instances
-			$default_paths = array(
-				'assets'  => $this->_ci->config->item('assets_path'),
-				'theme'   => $this->_ci->config->item('theme_path'),
-			);
-			foreach ($default_paths as $key => $path) 
-			{
-				if (is_null($path)) 
-				{
-					if (property_exists($this, '_'.$key.'_path')) 
-					{
-						$path = $this->{'_'.$key.'_path'};
-					}
-					else
-					{
-						throw new Exception("Missing the config path of '". strtoupper($key)."'");
-					}
-				}
-				if (! file_exists($path)) 
-				{
-					throw new Exception("Directory {$path} currently not exist.");
-				}
-				else 
-				{
-					$this->_paths[$key] = $path;
-				}
-			}	
-        } 
-        catch (Exception $e) 
-        {
-        	$this->_show_error($e->getMessage());
+        	Twig_Autoloader::register();
         }
 	}
 
 	/**
-	 * Set Twig Extension
+	 * Set all posible attrs in constructor
 	 *
-	 * Used (only) in every file in Theme directory.
-	 * 
-	 * @param string $new_extension 
-	 * @return void 
+	 * @param array $config [description]
 	 */
-	public function set_extension($new_extension = "")
+	private function _set(array $config)
 	{
-		try 
+		foreach ($config as $key => $val)
 		{
-			if (! preg_match('/^.*\.(twig|php.twig|html|html.twig)$/i', $new_extension)) 
+			switch (strtolower($key)) 
 			{
-				throw new Exception("Extension is not valid, use .twig|.php.twig|.html|.html.twig");
+				case 'functions':
+				case 'environment_options':
+				case 'extensions':
+				case 'pipeline_paths':
+					$this->{$key} = array_merge($this->{$key}, (array) $val);
+					break;
+
+				default:
+					$this->{$key} = $val;
+					break;
 			}
-		} 
+		}
+	}
+
+	/**
+	 * Add Twig Functions
+	 *
+	 * The functions can be called to generate content. The functions are called by his name 
+	 * and can have arguments
+	 * 
+	 * @param mixed $name  		Name of the function
+	 * @param mixed $function   Variable function
+	 */
+	public function add_function($name, $function = NULL)
+	{
+		try
+		{
+			if (! $this->_environment instanceof Twig_Environment) 
+			{
+				throw new Exception("Twig_Environment isn't set correctly.");
+			}
+			# Let's try to make a function of first arg.
+			(! is_callable($function)) && $function = $name;
+			# Finally let's try to add the function
+			$this->_environment->addFunction(new Twig_SimpleFunction($name, $function));
+		}
 		catch (Exception $e) 
 		{
-			$this->_show_error($e->getMessage());		
+			show_error($e->getMessage(),404, 'Attire::add_function()');
 		}
-		$this->_extension = $new_extension;
 		return $this;
 	}
 
 	/**
-	 * Initialize global attributes
+	 * Add multiple Twig Functions
+	 *
+	 * The functions can be called to generate content. The functions are called by his name 
+	 * and can have arguments
 	 * 
-	 * @param array $params
-	 * @return void
+	 * @param array $functions | Set of functions
 	 */
-	private function _set($params = array())
+	public function add_functions(array $functions)
 	{
-		foreach ($params as $key => $val)
+		try
 		{
-			$this->{'_'.$key} = $val;
-		}	
+			if (! $this->_environment instanceof Twig_Environment) 
+			{
+				throw new Exception("Twig_Environment isn't set correctly.");
+			}
+			foreach ($functions as $name => $function) 
+			{
+				# Let's try to make a function of first arg.
+				(! is_callable($function)) && $function = $name;
+				# Finally let's try to add the function
+				$this->_environment->addFunction(new Twig_SimpleFunction($name, $function));			
+			}
+		}
+		catch (Exception $e) 
+		{
+			show_error($e->getMessage(),404, 'Attire::add_function()');
+		}
+		return $this;
 	}	
 
 	/**
-	 * Show CI Error
-	 *
-	 * Used in every try/catch 
+	 * Set an available Twig Extension.
 	 * 
-	 * @param  string $error description of the error
-	 * @param  string $title title error
-	 * @return void
+	 * @param string $name | shortname available extension
+	 * @param mix $params  | extension params
 	 */
-	private function _show_error($error = "", $title = 'Attire Error')
+	public function add_extension($shortname, $params = NULL)
 	{
-		return show_error($error,404,$title);
+		try 
+		{
+			if (! $this->_environment instanceof Twig_Environment) 
+			{
+				throw new Exception("Twig_Environment isn't set correctly.");
+			}
+			elseif (! in_array($shortname, array_keys($this->extensions))) 
+			{
+				throw new Exception(
+					"<p>Error Processing Extension Request: '{$shortname}' as shortname.</p>"
+					."<p>Available are: </p>"
+					."<table style='padding-left:20px;'><thead><th>Shortname</th><th>Class</th></thead>"
+					.implode('<tr>', array_map(
+						function ($v, $k) { 
+							return sprintf("<td>%s</td> <td>%s</td></tr>", $k, $v); 
+						},
+						$this->extensions, 
+						array_keys($this->extensions)
+					))
+					."</table>");
+			}
+			$extension = $this->extensions[$shortname];
+			$this->_environment->addExtension(new $extension($params));
+		}
+		catch (Exception $e) 
+		{
+			show_error($e->getMessage(),404, 'Attire::add_extension()');
+		}
+		return $this;		
 	}
 
 	/**
-	 * Set Twig Loader
-	 *
-	 * The loaders are responsible for loading templates from a resource such as the Filesystem.
+	 * Set Twig File Extension used with every file.
+	 * 
+	 * @param string $file_extension 
+	 */
+	public function set_file_extension($file_extension = "")
+	{
+		try 
+		{
+			if (! preg_match('/^.*\.(twig|php|php.twig|html|html.twig)$/i', $file_extension)) 
+			{
+				throw new Exception("Extension '{$file_extension}' is not valid.");
+			}
+		} 
+		catch (Exception $e)
+		{
+			show_error($e->getMessage(), 404, 'Attire:set_file_extension()');		
+		}
+		$this->file_extension = $file_extension;
+		return $this;
+	}	
+
+	/**
+	 * Set the Twig Loader.
+	 * The loaders are responsible for loading templates from a resource.
 	 * 
 	 * @param mixed  $value  Twig Loader first param 
 	 * @param string  $type  The current type of Twig Loader
-	 * @param boolean  $option 
-	 * @return void 
 	 */
-	public function set_loader($value, $type = "",$option = FALSE)
+	public function set_loader($type = "", $value = NULL)
 	{
-		$params = array();
+		/**
+		 * @todo Twig_Loader Chain
+		 */	
 		try {
-			if ($type === 'filesystem') 
+			# Check the loader case
+			switch (strtolower($type)) 
 			{
-				$directory = $this->_paths['theme'].$value;
-				$this->_loader = new Twig_Loader_Filesystem($directory);
-				/**
-				 * @todo Cache/auto_reload currently not working
-				 *
-				 * $params["cache"]       = $this->_paths["cache"];
-				 * $params['auto_reload'] = $this->_auto_reload;	
-				 */
-				$params['debug'] = $this->_debug;
-			}
-			elseif ($type === 'array') 
-			{
-				if (is_array($value)) 
-				{
-					throw new Exception("Twig_Loader_Array needs an array structure as first param.");
-				}
-				else
-				{
-					$this->_loader = new Twig_Loader_Array($value);
-				}
-			}
-			else 
-			{
-				$this->_loader = new Twig_Loader_String();
+				case 'filesystem':
+					$template_dirs = array(APPPATH.'libraries/attire/dist/template');
+					if (isset($this->theme)) 
+					{
+						$template_dirs[] = $this->theme_path.$this->theme;
+					}
+					foreach ((array) $value as $theme_name) 
+					{
+						$template_dirs[] = $this->theme_path.$theme_name;
+					}
+					$this->_loader = new Twig_Loader_Filesystem($template_dirs);
+					break;	
+
+				case 'array':
+					if (! is_array($value)) 
+					{
+						throw new Exception("Set an array structure as second param.");
+					}
+					else
+					{
+						$this->_loader = new Twig_Loader_Array($value);
+					}
+					break;	
+
+				default:
+					$this->_loader = new Twig_Loader_String();
+					break;
 			}			
 		} 
 		catch (Exception $e) 
 		{
-			$this->_show_error($e->getMessage());
+			show_error($e->getMessage(),404, 'Attire::set_loader()');
 		}
-		$this->_environment = new Twig_Environment($this->_loader,$params);
+		return $this;
+	}
+
+	/**
+	 * Set Twig environment
+	 * 
+	 * @param array $params environment options
+	 */
+	public function set_environment(array $options = array())
+	{
+		try 
+		{
+			if (! $this->_loader instanceof Twig_LoaderInterface) 
+			{
+				throw new Exception("Twig_LoaderInterface isn't set correctly.");
+			}
+			$this->_environment = new Twig_Environment(
+				$this->_loader, 
+				array_merge($this->environment_options, $options)
+			);
+		} 
+		catch (Exception $e) 
+		{
+			show_error($e->getMessage(), 404, 'Attire::set_environment()');
+		}
+		return $this;
+	}
+
+	/**
+	 * Set the theme instance 
+	 * 
+	 * @uses Twig_Loader_Filesystem.
+	 * @uses Twig_Environment.
+	 * 
+	 * @param string $name | Theme name
+	 * @param mix $params  | Environment options
+	 */
+	public function set_theme($name, array $options = array())
+	{
+		# If not set the theme, set it
+		$this->theme !== $name && $this->theme = $name;
+		array_walk_recursive($this->pipeline_paths, function(&$path){
+			$path = str_replace('%theme%', $this->theme, $path);
+		});
+		return $this->set_loader('filesystem')
+			 		->set_environment($options);
+	}
+
+	/**
+	 * Add a layout in Twig
+	 *
+	 * Layout views are rendered in the output in the order they added.
+	 * 
+	 * @param string $type   | filename
+	 * @param array  $params | child view params
+	 */
+	public function set_layout($name, array $params = array())
+	{
+		$this->_layout = array('layouts/'.$name, $params);
 		return $this;
 	}
 
@@ -340,491 +469,197 @@ class Attire
 	 * Change the default Twig Lexer syntax, depends of available lexer declared
 	 * in the class
 	 * 
-	 * @param array $lexer 
-	 * @return self 
+	 * @param array $lexer
 	 */
-	public function set_lexer($lexer = array())
+	public function set_lexer($new_lexer = array())
 	{
 		try 
 		{
-			foreach ($lexer as $tag => $value) 
-			{
-				if (! in_array($tag, $this->_available_lexer)) 
-				{
-					throw new Exception("Lexer tag is not available.");
-				}
-			}
-		} 
-		catch (Exception $e) 
-		{
-			$this->_show_error($e->getMessage());
-		}		
-		$this->_current_lexer = $lexer;
-		return $this;	
-	}
-
-	/**
-	 * Add Twig Functions
-	 *
-	 * The functions can be called to generate content. The functions are called by his name 
-	 * and can have arguments
-	 * 
-	 * @param string $name  	Name of the function
-	 * @param mixed $function   Variable function
-	 * @return self
-	 */
-	public function add_function($name = "", $function)
-	{
-		try 
-		{
-			if (! is_callable($function)) 
-			{
-				throw new Exception("Variable can't be called as a function.");
-			}
-			elseif (! is_string($name)) 
-			{
-				throw new Exception("'add_function' first param needs to be a string (the function name).");
-			}
-			elseif (! is_a($this->_environment, 'Twig_Environment')) 
+			if (! $this->_environment instanceof Twig_Environment) 
 			{
 				throw new Exception("Twig_Environment isn't set correctly.");
 			}
+			$lexer_instance = new Twig_Lexer($this->_environment, $new_lexer);
+			$this->_environment->setLexer($lexer_instance);
 		} 
 		catch (Exception $e) 
 		{
-			$this->_show_error($e->getMessage());
+			show_error($e->getMessage(), 404, 'Attire::set_lexer()');
 		}
-		$function = new Twig_SimpleFunction($name,$function);
-		$this->_environment->addFunction($function);
+		return $this;	
+	}
+
+
+	/**
+	 * Add CI View file
+	 *
+	 * Every view file added (in the order they added) is rendered at last.
+	 * 
+	 * @param string $view      filename
+	 * @param array  $params    view params
+	 */
+	public function add_view($view, array $params = array())
+	{
+		$file = $view.$this->file_extension;
+		$key = (! strpos($view, '@'))? "@VIEWPATH/".$file : $file;
+		$this->_views[$key] = $params; 
 		return $this;
 	}
 
 	/**
-	 * Add global path
-	 *
 	 * Prepend or append Twig Loader global path
 	 * 
-	 * @param string  $path       Relative path
-	 * @param string  $namespace Space name without the '@'
-	 * @param boolean $prepend    Prepend method mode
-	 * 
-	 * @return self
+	 * @param string  $path      | Relative path
+	 * @param string  $namespace | Space name without the '@' symbol
+	 * @param boolean $prepend   | Enable prepend mode
 	 */
-	public function add_path($path = '', $namespace = '__main__', $prepend = FALSE)
+	public function add_path($path, $namespace = '__main__', $prepend = FALSE)
 	{
 		try 
 		{
-			if (! is_a($this->_loader, 'Twig_Loader_Filesystem')) 
+			if (! $this->_loader instanceof Twig_Loader_Filesystem) 
 			{
-				throw new Exception('Loader not set correctly.');
+				throw new Exception("Set the Twig_Loader as Filesystem.");
 			}
-			# Checking if directory path exist
-			$absolute_path = str_replace('//', '/', realpath(rtrim($path, '/').'/'));
-			if (! file_exists($path)) 
-			{
-				throw new Exception("{$path} currently not exist.");
-			}
+			($prepend !== FALSE)
+				? $this->_loader->prependPath($path, $namespace)
+				: $this->_loader->addPath($path, $namespace);
 		} 
 		catch (Exception $e) 
 		{
-			$this->_show_error($e->getMessage());
+			show_error($e->getMessage(), 404, 'Attire::add_path()');	
 		}
-		# Prepend or append?
-		($prepend !== FALSE)? 
-			$this->_loader->prependPath($absolute_path, $namespace):
-			$this->_loader->addPath($absolute_path, $namespace);
 		return $this;
 	}
 
 	/**
-	 * Load Twig Template
+	 * Prepend Twig Loader global path
 	 * 
-	 * Loads a template by name
-	 * 
-	 * @param  string $namepath Filename (includes path)
-	 * @return mixed       
+	 * @param string  $path      | Relative path
+	 * @param string  $namespace | Space name without the '@' symbol
 	 */
-	public function load_template($namepath = "")
+	public function prepend_path($path, $namespace = '__main__')
 	{
-		try 
-		{
-			if (! is_a($this->_loader, 'Twig_Loader_Filesystem')) 
-			{
-				throw new Exception('Need the Twig_Loader_Filesystem before loading.');
-			}	
-		} 
-		catch (Exception $e) 
-		{
-			$this->_show_error($e->getMessage());
-		}
-		$template_path = "{$namepath}{$this->_extension}";
-		return $this->_environment->loadTemplate($template_path);
-	}
-
-	/**
-	 * Add global param in Twig 
-	 * 
-	 * @param string $name  Param name
-	 * @param mixed $value Param value
-	 */
-	public function add_global($name, $value = NULL)
-	{
-		return $this->set_param($name,$value);
+		return $this->add_path($path, $namespace, TRUE);
 	}
 
 	/**
 	 * Add global params in Twig
 	 * 
-	 * @param string $name  Param name
-	 * @param mixed $value Param value
+	 * @param string $name | Global name
+	 * @param mixed $value | Global value
 	 */
-	public function set_param($name = "", $value = NULL)
-	{
-		try {
-			if (!is_string($name)) {
-				throw new Exception("Set param as string.");
-			}
-		} catch (Exception $e) {
-			$this->_show_error($e->getMessage());
-		}
-		$this->_params[$name] = $value;
-		return $this;
-	}
-
-	/**
-	 * Set Attire Theme
-	 *
-	 * Set the absolute path in the Twig loader filesystem method.
-	 * 
-	 * @param string $name Theme name
-	 */
-	public function set_theme($name = "")
-	{
-		$this->_theme = rtrim($name.'/');
-		$this->set_loader($name,'filesystem');
-		return $this;
-	}
-
-	/**
-	 * Add a child in Twig (Deprecated)
-	 *
-	 * All child files are rendered in the output in the order they added.
-	 *
-	 * @param string $type       filename
-	 * @param array  $params     child view params
-	 * @param string $child_path global child inside theme directory
-	 * @return void 
-	 */
-	public function add_child($type = "", $params = array(), $child_path = "childs")
-	{
-		try {
-			if (in_array($type, $this->_childs)) 
-			{
-				throw new Exception("Redefinition of a child.");
-			}
-		} catch (Exception $e) {
-			$this->_show_error($e->getMessage());
-		}
-		$path = "{$child_path}/{$type}{$this->_extension}";
-		$this->_childs[$path] = (array) $params;
-		return $this;
-	}
-
-	/**
-	 * Add a layout in Twig
-	 *
-	 * All layout files are rendered in the output in the order they added.
-	 *
-	 * @param string $type    filename
-	 * @param array  $params  child view params
-	 * @return void 
-	 */
-	public function add_layout($type = "", $params = array())
-	{
-		try {
-			if (in_array($type, $this->_childs)) 
-			{
-				throw new Exception("Redefinition of a child.");
-			}			
-		} catch (Exception $e) {
-			$this->_show_error($e->getMessage());
-		}
-		$path = "layout/{$type}{$this->_extension}";
-		$this->_childs[$path] = (array) $params;
-		return $this;
-	}
-
-	/**
-	 * Cloned method from add_layout
-	 */
-	public function set_layout($type = "", $params = array())
-	{
-		return $this->add_layout($type,$params);
-	}
-
-	/**
-	 * Add CI View file
-	 *
-	 * Every view file added (in the order they added) is rendered at last
-	 * 
-	 * Note: this method is equivalente to codeigniter load_view method.
-	 * 
-	 * @param string $view      filename
-	 * @param array  $params    view params
-	 * @param string $extension file extension used as default
-	 * @return void 
-	 */
-	public function add_view($view = "", $params = array(), $extension = NULL)
+	public function add_global($name, $value = NULL)
 	{
 		try 
 		{
-			if (in_array($view, $this->_views)) 
+			if (! is_string($name)) 
 			{
-				throw new Exception("Not possible to add a view twice.");
+				throw new Exception("Set global first param as string.");
 			}
-			elseif (!is_string($view)) 
+			if (! $this->_environment instanceof Twig_Environment) 
 			{
-				throw new Exception("Need the view path in string format.");
+				throw new Exception("Twig_Environment isn't set correctly.");
 			}
-			elseif (empty($this->_childs)) 
+			$this->_environment->addGlobal($name, $value);
+		} 
+		catch (Exception $e) 
+		{
+			show_error($e->getMessage(), 404, 'Attire::add_global()');
+		}
+		return $this;
+	}	
+
+	/**
+	 * Add multiple global params in Twig
+	 * 
+	 * @param array $globals | Set of global vars
+	 */
+	public function add_globals(array $globals)
+	{
+		try 
+		{
+			if (! $this->_environment instanceof Twig_Environment) 
 			{
-				throw new Exception("There is no layout, run first add_layout.");
+				throw new Exception("Twig_Environment isn't set correctly.");
+			}
+			foreach ($globals as $name => $value) 
+			{
+				$this->_environment->addGlobal($name, $value);
 			}
 		} 
 		catch (Exception $e) 
 		{
-			$this->_show_error($e->getMessage());
+			show_error($e->getMessage(), 404, 'Attire::add_global()');
 		}
-
-		$extension !== NULL && $this->_extension = $extension;
-
-		if ($this->_restricted_mode !== FALSE) 
-		{
-			$class = $this->_ci->router->fetch_class();
-			$method = $this->_ci->router->fetch_method();
-			
-			$path = "@VIEWPATH/{$class}/{$method}/{$view}{$this->_extension}";
-		}
-		elseif (strpos($view, '@') === FALSE) 
-		{
-			$path = "@VIEWPATH/{$view}{$this->_extension}";
-		}
-		else
-		{
-			$path = "{$view}{$this->_extension}";
-		}
-		$this->_views[$path] = (array) $params;
 		return $this;
 	}
 
 	/**
-	 * Add Twig filters same as functions
+	 * [render description]
+	 * @param  array  $params [description]
 	 * 
-	 * @param [type] $name     [description]
-	 * @param [type] $function [description]
 	 */
-	public function add_filter($name, $function=NULL)
+	public function render(array $params = array())
 	{
 		try 
 		{
-			if ((!is_callable($function)) && (!is_string($name))) 
+			$this->_CI->benchmark->mark('Attire Render Time_start');
+			if (! is_writable($this->pipeline_paths['CACHE_DIRECTORY'])) 
 			{
-				throw new Exception("Cannot set function, check params.");
+				throw new Exception("Error Processing Request");
 			}
-			elseif (! is_a($this->_environment, 'Twig_Environment')) 
-			{
-				throw new Exception("Twig_Environment is not set correctly.");
-			}			
-		} catch (Exception $e) {
-			$this->_show_error($e->getMessage());
-		}
-		$filter = new Twig_SimpleFilter($name,$function);
-		$this->_environment->addFilter($filter);
-		return $this;
-	}
+			// Create Sprockets pipeline instance
+			$pipeline = new Sprockets\Pipeline($this->pipeline_paths);
+			// Set the pipeline cache params
+			$vars    = array();
+			$options = array();
+			// Set the pipeline cache instances
+			$css_cache = new Sprockets\Cache($pipeline, 'css', $vars, $options);
+			$js_cache  = new Sprockets\Cache($pipeline, 'js', $vars, $options);
+			// Store the cache paths
+			$this->global_vars['pipeline']['css'] = $css_cache;
+			$this->global_vars['pipeline']['js'] = $js_cache;
+			array_walk_recursive($this->global_vars['pipeline'], function(&$cache){
+				$cache = '/'.$this->_cache_base.basename((string) $cache);
+			});
+			# Set additional stored config functions and global vars
+			$this->add_functions($this->functions);
+			$this->add_globals($this->global_vars);
 
-	/**
-	 * Set current theme global vars inside config file.
-	 */
-	public function set_config_globals()
-	{
-		$globals = $this->_ci->config->item('global_vars');
-		foreach ((array) $globals as $key => $value) 
-		{
-			(is_callable($value))?
-				$this->set_param($key, call_user_func($value)):
-				$this->set_param($key,$value);
-		}
-	}
+			if ($this->_loader instanceof Twig_Loader_Filesystem) 
+			{	
+				$this->_loader->prependPath(VIEWPATH, 'VIEWPATH');
 
-	/**
-	 * Set Codeigniter helper functions inside config file
-	 */
-	public function set_config_functions()
-	{
-		$functions = (array) $this->_ci->config->item('twig_ci_functions');
-		foreach (array_merge($functions, $this->_ci_functions) as $name => $function) 
-		{
-			if (function_exists($name)) 
-			{
-				$this->add_function($name,$function);
-			}
-		}		
-	}
-
-	################################################################################
-	# Bower packages (not stable)
-	################################################################################
-	
-	/**
-	 * @todo implement dynamic assets using bower
-	 */
-
-	/**
-	 * [add_asset description]
-	 * @param [type] $module_name [description]
-	 * @param [type] $path        [description]
-	 */
-	public function add_asset($module_name, $path)
-	{
-		$this->_assets[$module_name] = array(
-			'path' => $path,
-			'type' => 'Assetic\Asset\FileAsset'
-		);
-		return $this;
-	}
-
-	/**
-	 * [add_bower_package description]
-	 * @param [type] $module_name [description]
-	 * @param [type] $path        [description]
-	 */
-	public function add_bower_package($module_name, $path)
-	{
-		#$this->_paths['bower'] = $this->_ci->config->item('bower_path','attire', TRUE);
-		return $this->add_asset($module_name,$this->_paths['bower'].$path);
-	}	
-
-	################################################################################
-
-	/**
-	 * Render the Twig template with Assetic manager
-	 *
-	 * If Twig Loader method is string, we can render view as string template and
-	 * set the params, else there is no need to declare params or view in this method.
-	 * 
-	 * @param  string $view   
-	 * @param  array  $params 
-	 * @return void         
-	 */
-	public function render($view = "", $params = array())
-	{
-		$this->_ci->benchmark->mark('AttireRender_start');
-		# Autoload url helper (required)
-		$this->_ci->load->helper('url');		
-		# Set additional config functions/global vars inside Attire environment
-		$this->set_config_globals();
-		$this->set_config_functions();
-		# Add default view path
-		$this->add_path(VIEWPATH, 'VIEWPATH');
-		# Twig environment (master of puppets)
-		$twig = &$this->_environment;				
-		$escaper = new Twig_Extension_Escaper('html');
-		$twig->addExtension($escaper);	
-		$twig->addFilter('var_dump', new Twig_Filter_Function('var_dump'));
-		# Declare asset manager and add global paths
-		$am = new AssetManager();
-		# Assets global paths
-		if ($this->_bundle_path !== NULL) 
-		{
-			$class  = $this->_ci->router->fetch_class();
-			$method = $this->_ci->router->fetch_method();
-			$directory = $this->_ci->router->directory;
-			$this->_bundle_path = rtrim($this->_bundle_path,'/').'/';
-
-			$absolute_path = rtrim($this->_bundle_path.$directory.'assets','/');
-
-			$global_assets = array(
-				'module_js'  => array(
-					'path' => "{$absolute_path}/js/{$class}/{$method}/*",
-					'type' => 'Assetic\Asset\GlobAsset'
-				),
-				'module_css' => array(
-					'path' => "{$absolute_path}/css/{$class}/{$method}/*",
-					'type' => 'Assetic\Asset\GlobAsset'
-				),
-				'global_css' => array(
-					'path' => "{$absolute_path}/css/{$class}/*",
-					'type' => 'Assetic\Asset\GlobAsset'
-				),
-				'global_js'  => array(
-					'path' => "{$absolute_path}/js/{$class}/*",
-					'type' => 'Assetic\Asset\GlobAsset'
-				)
-			);
-			foreach (array_merge($global_assets,$this->_assets) as $global => $params) 
-			{
-				$class_name = $params['type'];
-				$am->set($global, new $class_name($params['path']));
-			}
-		}
-		# Declare filters manager
-		$fm = new FilterManager();
-		$fm->set('cssrewrite', new CssRewriteFilter());
-		$absolute_path = rtrim("{$this->_paths["theme"]}{$this->_theme}",'/').'/assets';
-		# Declare assetic factory with filters and assets
-		$factory = new AssetFactory($absolute_path);
-		$factory->setAssetManager($am);
-		$factory->setFilterManager($fm);
-		$factory->setDebug($this->_debug);
-		# Add assetic extension to factory
-		$absolute_path = rtrim($this->_paths['assets'],'/');
-		$factory->setDefaultOutput($absolute_path);
-		$twig->addExtension(new AsseticExtension($factory));
-		# This is too lazy, we need a lazy asset manager...
-		$am = new LazyAssetManager($factory);
-		$am->setLoader('twig', new TwigFormulaLoader($twig));
-		# Add the Twig resource (following the assetic documentation)
-		$resource = new TwigResource($this->_loader, $this->_default_template.$this->_extension);
-		$am->addResource($resource, 'twig');
-		# Write all assets files in the output directory in one or more files
-		try {
-			$writer = new AssetWriter($absolute_path);
-			$writer->writeManagerAssets($am);
-		} catch (\RuntimeException $e) {
-			$this->_show_error($e->getMessage());
-		}		
-		# Set current lexer
-		if (!empty($this->_current_lexer)) 
-		{
-			$lexer = new Twig_Lexer($this->_environment, $this->_current_lexer);
-			$twig->setLexer($lexer);
-		}
-		try {
-			# Render all childs
-			if (! empty($this->_childs)) 
-			{
-				foreach ($this->_childs as $child => $params) 
+				if (empty($this->_layout)) 
 				{
-					$this->_params['views'] = $this->_views;
-					echo $twig->render($child, array_merge($params,$this->_params));
+					$master = $this->template;
 				}
-				# Remove childs after the use
-				$this->_childs = array();
+				else
+				{
+					list($master, $params) = $this->_layout;
+				}
+				$master.= $this->file_extension;
+				$params['views'] = $this->_views;				
+				
+				$template = $this->_environment->loadTemplate($master);
+				echo $template->render($params); 	
 			}
-			# Else render params as string format (Twig_Loader_String)
-			elseif (strlen($view) <= 1 && ($this->_loader instanceof Twig_Loader_String)) 
+			else
 			{
-				echo $twig->render($this->_default_template.$this->_extension, $params);	
-			}			
+				/**
+				 * @todo set another render method
+				 */
+				throw new Exception("Another render method currently not supported.");
+			}
+			$this->_CI->benchmark->mark('Attire Render Time_end');
 		} 
-		catch (Twig_Error_Syntax $e) 
+		catch (Exception $e) 
 		{
-			$this->_show_error($e->getMessage());	
-		}		
-		$this->_ci->benchmark->mark('AttireRender_end');
+			show_error($e->getMessage(), 404, 'Attire::render()');			
+		}
 	}
 }
 
-/* End of file Twig.php */
-/* Location: ./application/libraries/Twig.php */
+/* End of file Attire.php */
+/* Location: ./application/libraries/attire/Attire.php */

@@ -1,18 +1,21 @@
 {
     "name": "dsv/attire",
-    "description": "Attire is an implementation of Twig template engine and Assetic asset management framework for CodeIgniter 3.0.",
+    "description": "Attire is an implementation of Twig template engine combined with Sprockets-PHP asset pipeline manager for CodeIgniter v3.0.x",
     "type": "codeigniter-library",
      "keywords": [
         "twig",
-        "assetic",
+        "pipeline",
+        "sprockets",
         "codeigniter-twig",
         "codeigniter",
-        "codeigniter-assetic",
+        "codeigniter-sprockets",
+        "codeigniter-pipeline"
         "codeigniter-theme",
         "codeigniter-template",
+        "codeigniter-attire",
         "template-engine",
         "asset-management",
-        "codeigniter-attire",
+        "asset-pipeline",
         "attire"
     ],
     "license": "MIT",
@@ -20,7 +23,7 @@
         "php": ">=5.2.4",
         "composer/installers": "*",
         "twig/twig": "^1.18",
-        "kriswallsmith/assetic": "^1.2"
+        "vendethiel/sprockets-php": "^2.1"
     }, 
     "homepage": "https://github.com/davidsosavaldes/Attire",
     "authors": [
@@ -31,12 +34,12 @@
     ],
     "support":{
         "issues": "https://github.com/davidsosavaldes/Attire/issues",
-        "wiki": "http://ci-attire.readthedocs.org/",
+        "wiki": "http://davidsosavaldes.github.io/Attire",
         "email": "david.sosa.valdes@gmail.com"
     },
     "extra": {
         "branch-alias": {
-            "dev-master": "1.3.x-dev"
+            "dev-master": "2.0.x-dev"
         },
         "installer-name": "attire"
     }    

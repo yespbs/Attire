@@ -1,5 +1,10 @@
 Please view this file on the master branch, on stable branches it's out of date.
 
+v 2.0.0 (Pipeline)
+  - New asset manager (https://github.com/vendethiel/Sprockets-PHP).
+  - Fix bugs (constructor)
+  - Improves memory: -38.6%.
+
 v 1.2.0 (oniricosistemas)
   - Add CI helper/libraries functions inside the config file.
   - Fix bugs (render method)
