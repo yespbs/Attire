@@ -196,6 +196,9 @@ class Attire
         array_walk($this->pipeline_paths['template']['directories'], function(&$path){ 
         	$path = $this->theme_path.rtrim($path,'/').'/';
         });
+        // Also set the default library assets path
+        $default = APPPATH.'libraries/attire/dist/template/assets';
+        $this->pipeline_paths['template']['directories'][] = $default;
         // Set pipeline cache path (required)
         $this->pipeline_paths['CACHE_DIRECTORY'] = $this->assets_path;
         $this->_cache_base = basename($this->assets_path).'/';
@@ -611,6 +614,9 @@ class Attire
 			}
 			// Create Sprockets pipeline instance
 			$pipeline = new Sprockets\Pipeline($this->pipeline_paths);
+			/**
+			 * @todo Set pipeline cache dynamic options
+			 */
 			// Set the pipeline cache params
 			$vars    = array();
 			$options = array();
