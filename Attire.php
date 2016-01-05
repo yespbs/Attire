@@ -18,7 +18,7 @@
  * CodeIgniter Attire
  *
  * Templating with this class is done by layering the standard CI view system and extending 
- * it with Brackets-PHP (pipeline asset management). The basic idea is that for every single 
+ * it with Sprockets-PHP (pipeline asset management). The basic idea is that for every single 
  * CI view there are individual CSS, Javascript and View files that correlate to it and 
  * this structure is conected with the Twig Engine.
  *
@@ -47,7 +47,7 @@ class Attire
 	protected $assets_path = NULL;
 
 	/**
-	 * Brackets-PHP pipeline paths
+	 * Sprockets-PHP pipeline paths
 	 * @var array
 	 */
 	protected $pipeline_paths = array();
@@ -124,7 +124,7 @@ class Attire
 	protected $_views = array();
 
 	/**
-	 * Brackets-PHP: Cache directory base path
+	 * Sprockets-PHP: Cache directory base path
 	 * @var string
 	 */
 	protected $_cache_base = NULL;
