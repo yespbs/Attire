@@ -93,7 +93,7 @@ This will create a template environment with the default settings and a loader t
 
 ##Installing a theme
 
-Attire supports theme instances that are quick start points for you to kick off your next project. So instead of create a central environment, a way more simple to start using Attire is creating a theme instance theme with a layout:
+Attire supports theme instances that are quick start points for you to kick off your next project. So instead of create a central environment, a way more simple to start using Attire is calling a theme instance with a layout:
 
 **Bootstrap + Attire**
 
