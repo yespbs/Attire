@@ -26,126 +26,139 @@
  * @subpackage Libraries
  * @category   Libraries
  * @author     David Sosa Valdes
- * @link       https://gitlab.com/david-sosa-valdes/attire
- * @copyright  Copyright (c) 2014, David Sosa Valdes.
- * @version    2.0.0
- *
+ * @link       https://github.com/davidsosavaldes/Attire
  */
 
 class Attire
 {
 	/**
 	 * Theme directory path
+	 * 
 	 * @var string
 	 */
 	protected $theme_path = NULL;
 
 	/**
 	 * Assets directory path
+	 * 
 	 * @var string
 	 */
 	protected $assets_path = NULL;
 
 	/**
 	 * Sprockets-PHP pipeline paths
+	 * 
 	 * @var array
 	 */
 	protected $pipeline_paths = array();
 
 	/**
 	 * Twig valid extensions
+	 * 
 	 * @var array
 	 */
 	protected $extensions = array();
 
 	/**
 	 * Twig files extension
+	 * 
 	 * @var string
 	 */
 	protected $file_extension = '.twig';	
 
 	/**
 	 * Twig Environment options
+	 * 
 	 * @var array
 	 */
 	protected $environment_options = array();
 
 	/**
 	 * Twig external functions 
+	 * 
 	 * @var array
 	 */
 	protected $functions = array();
 
 	/**
 	 * Twig global variables
+	 * 
 	 * @var array
 	 */
 	protected $global_vars = array();
 
 	/**
 	 * Enable the Twig built-in autoloader
+	 * 
 	 * @var boolean
 	 */
 	protected $auto_register = FALSE;
 
 	/**
 	 * Default theme 
+	 * 
 	 * @var string
 	 */
 	protected $theme = NULL;
 
 	/**
 	 * Default master template (without extension)
+	 * 
 	 * @var string
 	 */
 	protected $template = 'master';
 
 	/**
 	 * Twig Loader
+	 * 
 	 * @var object
 	 */
-	private $_loader = NULL;
+	protected $_loader = NULL;
+
 	/**
 	 * Twig Environment
+	 * 
 	 * @var object
 	 */
-	private $_environment = NULL;	
+	protected $_environment = NULL;	
 
 	/**
 	 * Default layout (without extension)
+	 * 
 	 * @var string
 	 */
 	protected $_layout = NULL;
 
 	/**
 	 * Stored views with their params
+	 * 
 	 * @var array
 	 */
 	protected $_views = array();
 
 	/**
-	 * Sprockets-PHP: Cache directory base path
+	 * Sprockets-PHP cache directory base path
+	 * 
 	 * @var string
 	 */
 	protected $_cache_base = NULL;
 
 	/**
 	 * CI Instance
+	 * 
 	 * @var object
 	 */
-	private $_CI;
+	protected $_CI;
 
 	/**
-	 * Constructor
+	 * Class constructor.
 	 * 
-	 * @param array $config - library params
+	 * @param array $config | library params
 	 */
 	public function __construct(array $config = array())
 	{
 		// Load CI Instance
         $this->_CI =& get_instance();
-        // Load CI required libraries, helpers, config files, etc.
-        $this->_CI->load->helper('url');
         // Set the default Twig environment options
         $this->environment_options = array(
 			'charset'             => 'utf-8',
@@ -211,9 +224,9 @@ class Attire
 	}
 
 	/**
-	 * Set all posible attrs in constructor
+	 * Set all posible attrs in constructor.
 	 *
-	 * @param array $config [description]
+	 * @param array $config | class config options
 	 */
 	private function _set(array $config)
 	{
@@ -239,10 +252,10 @@ class Attire
 	 * Add Twig Functions
 	 *
 	 * The functions can be called to generate content. The functions are called by his name 
-	 * and can have arguments
+	 * and can have arguments.
 	 * 
-	 * @param mixed $name  		Name of the function
-	 * @param mixed $function   Variable function
+	 * @param mixed $name  	  | Name of the function
+	 * @param mixed $function | Variable function
 	 */
 	public function add_function($name, $function = NULL)
 	{
@@ -252,9 +265,9 @@ class Attire
 			{
 				throw new Exception("Twig_Environment isn't set correctly.");
 			}
-			# Let's try to make a function of first arg.
+			//Let's try to make a function of first arg.
 			(! is_callable($function)) && $function = $name;
-			# Finally let's try to add the function
+			//Finally let's try to add the function
 			$this->_environment->addFunction(new Twig_SimpleFunction($name, $function));
 		}
 		catch (Exception $e) 
@@ -282,9 +295,9 @@ class Attire
 			}
 			foreach ($functions as $name => $function) 
 			{
-				# Let's try to make a function of first arg.
+				//Let's try to make a function of first arg.
 				(! is_callable($function)) && $function = $name;
-				# Finally let's try to add the function
+				//Finally let's try to add the function
 				$this->_environment->addFunction(new Twig_SimpleFunction($name, $function));			
 			}
 		}
@@ -296,10 +309,10 @@ class Attire
 	}	
 
 	/**
-	 * Set an available Twig Extension.
+	 * Add an available Twig Extension to the environment.
 	 * 
-	 * @param string $name | shortname available extension
-	 * @param mix $params  | extension params
+	 * @param string $name   | Shortname available extension
+	 * @param mix    $params | Extension params
 	 */
 	public function add_extension($shortname, $params = NULL)
 	{
@@ -314,7 +327,8 @@ class Attire
 				throw new Exception(
 					"<p>Error Processing Extension Request: '{$shortname}' as shortname.</p>"
 					."<p>Available are: </p>"
-					."<table style='padding-left:20px;'><thead><th>Shortname</th><th>Class</th></thead>"
+					."<table style='padding-left:20px;'>"
+					."<thead><th>Shortname</th><th>Class</th></thead>"
 					.implode('<tr>', array_map(
 						function ($v, $k) { 
 							return sprintf("<td>%s</td> <td>%s</td></tr>", $k, $v); 
@@ -335,11 +349,11 @@ class Attire
 	}
 
 	/**
-	 * Set Twig File Extension used with every file.
+	 * Set a new valid file extension.
 	 * 
-	 * @param string $file_extension 
+	 * @param string $file_extension | New file posible extension
 	 */
-	public function set_file_extension($file_extension = "")
+	public function set_file_extension($file_extension)
 	{
 		try 
 		{
@@ -358,18 +372,19 @@ class Attire
 
 	/**
 	 * Set the Twig Loader.
+	 * 
 	 * The loaders are responsible for loading templates from a resource.
 	 * 
-	 * @param mixed  $value  Twig Loader first param 
-	 * @param string  $type  The current type of Twig Loader
+	 * @param mixed  $value | Twig Loader first param 
+	 * @param string $type  | The current type of Twig Loader
 	 */
-	public function set_loader($type = "", $value = NULL)
+	public function set_loader($type, $value = NULL)
 	{
 		/**
 		 * @todo Twig_Loader Chain
 		 */	
 		try {
-			# Check the loader case
+			//Check the loader case
 			switch (strtolower($type)) 
 			{
 				case 'filesystem':
@@ -411,9 +426,9 @@ class Attire
 	/**
 	 * Set Twig environment
 	 * 
-	 * @param array $params environment options
+	 * @param array $params | Environment options
 	 */
-	public function set_environment(array $options = array())
+	public function set_environment(array $options)
 	{
 		try 
 		{
@@ -436,16 +451,14 @@ class Attire
 	/**
 	 * Set the theme instance 
 	 * 
-	 * @uses Twig_Loader_Filesystem.
-	 * @uses Twig_Environment.
-	 * 
-	 * @param string $name | Theme name
-	 * @param mix $params  | Environment options
+	 * @param string $name   | Theme name
+	 * @param mix    $params | Environment options
 	 */
 	public function set_theme($name, array $options = array())
 	{
-		# If not set the theme, set it
+		//If not set the theme, set it
 		$this->theme !== $name && $this->theme = $name;
+		//Replace the string format with the theme name
 		array_walk_recursive($this->pipeline_paths, function(&$path){
 			$path = str_replace('%theme%', $this->theme, $path);
 		});
@@ -471,11 +484,11 @@ class Attire
 	 * Set Twig Lexer
 	 *
 	 * Change the default Twig Lexer syntax, depends of available lexer declared
-	 * in the class
+	 * in the class.
 	 * 
-	 * @param array $lexer
+	 * @param array $lexer | Twig Lexer
 	 */
-	public function set_lexer($new_lexer = array())
+	public function set_lexer(array $new_lexer = array())
 	{
 		try 
 		{
@@ -499,8 +512,8 @@ class Attire
 	 *
 	 * Every view file added (in the order they added) is rendered at last.
 	 * 
-	 * @param string $view      filename
-	 * @param array  $params    view params
+	 * @param string $view   | Filename
+	 * @param array  $params | View params
 	 */
 	public function add_view($view, array $params = array())
 	{
@@ -550,8 +563,8 @@ class Attire
 	/**
 	 * Add global params in Twig
 	 * 
-	 * @param string $name | Global name
-	 * @param mixed $value | Global value
+	 * @param string $name  | Name
+	 * @param mixed  $value | Stored value
 	 */
 	public function add_global($name, $value = NULL)
 	{
@@ -600,9 +613,9 @@ class Attire
 	}
 
 	/**
-	 * [render description]
-	 * @param  array  $params [description]
+	 * Render method
 	 * 
+	 * @param array $params | Params passed to the template as Twig variables.
 	 */
 	public function render(array $params = array())
 	{
@@ -616,9 +629,9 @@ class Attire
 			// Create Sprockets pipeline instance
 			$pipeline = new Sprockets\Pipeline($this->pipeline_paths);
 			/**
+			 * Set the pipeline cache params
 			 * @todo Set pipeline cache dynamic options
 			 */
-			// Set the pipeline cache params
 			$vars    = array();
 			$options = array();
 			// Set the pipeline cache instances
@@ -630,7 +643,7 @@ class Attire
 			array_walk_recursive($this->global_vars['pipeline'], function(&$cache){
 				$cache = '/'.$this->_cache_base.basename((string) $cache);
 			});
-			# Set additional stored config functions and global vars
+			//Set additional stored config functions and global vars
 			$this->add_functions($this->functions);
 			$this->add_globals($this->global_vars);
 
