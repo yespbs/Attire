@@ -5,13 +5,13 @@
  *
  * An open source application development framework for PHP
  *
- * @package	CodeIgniter
- * @author	EllisLab Dev Team
- * @copyright	Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
- * @copyright	Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
- * @license	http://opensource.org/licenses/MIT	MIT License
- * @link	http://codeigniter.com
- * @since	Version 1.0.0
+ * @package   CodeIgniter
+ * @author    EllisLab Dev Team
+ * @copyright Copyright (c) 2008 - 2014, EllisLab, Inc. (http://ellislab.com/)
+ * @copyright Copyright (c) 2014 - 2015, British Columbia Institute of Technology (http://bcit.ca/)
+ * @license   http://opensource.org/licenses/MIT	MIT License
+ * @link      http://codeigniter.com
+ * @since     Version 1.0.0
  */
 
 /**
@@ -22,13 +22,13 @@
  * CI view there are individual CSS, Javascript and View files that correlate to it and 
  * this structure is conected with the Twig Engine.
  *
- * @package	CodeIgniter
- * @subpackage	Libraries 
- * @category	Libraries
- * @author	David Sosa Valdes
- * @link		https://github.com/davidsosavaldes/Attire
- * @copyright   Copyright (c) 2014, David Sosa Valdes.
- * @version 	2.0.0
+ * @package    CodeIgniter
+ * @subpackage Libraries
+ * @category   Libraries
+ * @author     David Sosa Valdes
+ * @link       https://gitlab.com/david-sosa-valdes/attire
+ * @copyright  Copyright (c) 2014, David Sosa Valdes.
+ * @version    2.0.0
  *
  */
 
@@ -163,7 +163,7 @@ class Attire
 			'profiler'  => 'Twig_Extension_Profiler',
 			'optimizer' => 'Twig_Extension_Optimizer'
 		);
-		// Set the pipeline assets paths
+		// Set the default pipeline assets paths
 		$this->pipeline_paths = array(
 			'template' => array(
 				'directories' => array(
@@ -184,21 +184,22 @@ class Attire
 				)
 			)
 		);
-        // Set all params
+        // Set the user params
         $this->_set($config);
-        // If not set the library paths, set it (required)
+        // If not set the library paths, set it
         empty($this->theme_path)  && $this->theme_path = APPPATH.'themes/';
         empty($this->assets_path) && $this->assets_path = FCPATH.'assets/';
         // Add trailing slash if not set
         $this->theme_path  = rtrim($this->theme_path, '/').'/';
         $this->assets_path = rtrim($this->assets_path, '/').'/';
-        // Set absolute paths of pipeline assets:
+        // Set an absolute path to all pipeline assets:
         array_walk($this->pipeline_paths['template']['directories'], function(&$path){ 
         	$path = $this->theme_path.rtrim($path,'/').'/';
         });
-        // Also set the default library assets path
-        $default = APPPATH.'libraries/attire/dist/template/assets';
-        $this->pipeline_paths['template']['directories'][] = $default;
+        // Also append the default library assets path
+        array_push($this->pipeline_paths['template']['directories'], 
+        	APPPATH.'libraries/attire/dist/template/assets'
+        );
         // Set pipeline cache path (required)
         $this->pipeline_paths['CACHE_DIRECTORY'] = $this->assets_path;
         $this->_cache_base = basename($this->assets_path).'/';
