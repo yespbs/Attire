@@ -4,13 +4,25 @@ layout: default
 <section class="description">
   <div class="row">
     <div class="jumbotron">
+      <h2>{{site.title}}</h2>
       <p>{{site.description}}</p>
       {% if site.data.install.latest %}
         <p><a class="btn btn-primary btn-lg" href="{{ site.data.install.latest | prepend: site.baseurl }}"  id="install-latest" role="button">Install Latest Build</a></p>
       {% endif %}
+      <p class="muted" style="font-size:14px;">
+        Currently v{{site.data.project.version}}
+      </p>
     </div>
   </div>
 </section>
+{% if site.data.project.motto %}
+  <section class="motto">
+    <div class="text-center">
+      <h4>{{ site.data.project.motto }}</h4>
+    </div>
+  </section>
+  <hr>
+{% endif %}
 {% if site.data.features %}
   <section class="features">
     <div class="features-title">
@@ -18,7 +30,7 @@ layout: default
       <p>Built on top of great technology.</p>
     </div>
     {% assign features_length = site.data.features | size %}
-    {% assign col_size = 12 | divided_by: features_length | round %}
+    {% assign col_size = 12 | divided_by: features_length - 1| round %}
     <div class="row text-center">
       {% for feature in site.data.features %}
         <div class="col-sm-{{ col_size }}">
@@ -29,16 +41,24 @@ layout: default
       {% endfor %}
     </div>
   </section>
-  <hr>
 {% endif %}
-{% if site.data.project.motto %}
-  <section class="motto">
-    <div class="text-center">
-      <h4>{{ site.data.project.motto }}</h4>
+{% if site.data.features2 %}
+  <hr style="border:none">
+  <section class="features">
+    {% assign features_length = site.data.features2 | size %}
+    {% assign col_size = 12 | divided_by: features_length - 1| round %}
+    <div class="row text-center">
+      {% for feature in site.data.features2 %}
+        <div class="col-sm-{{ col_size }}">
+          <i class="fa fa-{{ feature.icon }} fa-3x fa-fw"></i>
+          <h4>{{ feature.title }}</h4>
+          <p>{{ feature.description }}</p>
+        </div>
+      {% endfor %}
     </div>
   </section>
-  <hr>
 {% endif %}
+<hr>
 {% if site.data.project.demo %}
   <section class="demo" style="padding:25px;">
     <div class="text-center">

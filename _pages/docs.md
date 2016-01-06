@@ -6,15 +6,16 @@ permalink: /docs/
 description: ""
 menu:
   - setup: 
-      Installation     : "#installation"
-      Environment      : "#environment"
-      Getting Started  : "#getting-started"
-      Adding Views     : "#adding-views"
+      Installation       : "#installation"
+      Getting Started    : "#getting-started"
+      Installing a theme : "#installing-a-theme"
+      Adding Views       : "#adding-views"
   - user guide:
-      Creating themes  : "#creating-themes"
-      Twig Environment : "#twig-environment"
+      Creating themes  	 : "#creating-themes"
+      Twig Environment 	 : "#twig-environment"
+      Sprockets Pipeline : "#sprockets-pipeline"
   - get involved:
-      Contributions    : "#contributions"
+      Contributions    	 : "#contributions"
 ---
 
 Installation
@@ -24,9 +25,6 @@ Installation
 
 	composer require dsv/attire 
 
-Environment
------------
-
 Now we need to set the environment where all your templates are stored properly.
 
 **Autoloading composer**
@@ -34,74 +32,81 @@ Now we need to set the environment where all your templates are stored properly.
 Enabling this setting in **application/config/config.php** will tell CodeIgniter to look for a Composer package auto-loader script.
 
 {% highlight PHP startinline %}
-$config['composer_autoload'] = 'vendor/autoload.php';
+$config['composer_autoload'] = TRUE;
+{% endhighlight %}
+
+Or if you have your vendor/ folder located somewhere else, you can opt to set a specific path as well:
+
+{% highlight PHP startinline %}
+$config['composer_autoload'] = '/path/to/vendor/autoload.php';
 {% endhighlight %}
 
 **Config File (optional)**
 
-Attire use one config file to retrieve configuration preferences. Copy the **dist/config/attire.php** file inside your config directory:
+Attire use one config file to retrieve configuration preferences. Copy the **dist/config/attire.php** file inside your config folder:
 
 	+-APPPATH/
 	| | +-config/
 	| | | +-attire.php
 
-**Directory structure**
+**folder structure**
 
-Create this directory structure inside your CodeIgniter application:
+Create this folder structure inside your CodeIgniter application:
 
 	+-APPPATH/
 	| +-themes/
 	+-FCPATH 
 	| +-assets/
-	| | +-css/
-	| | +-js/
 
-Notes:
+Where:
 
-* ```APPPATH``` is Codeigniter's principal directory, where all your controllers, models and views are placed.
-* ```FCPATH``` is Codeigniter's secured installation directory, where your ```index.php``` file is placed (normally outside the application directory).
+* ```APPPATH``` is Codeigniter's principal folder, where all your controllers, models and views are placed.
+* ```FCPATH``` is Codeigniter's secured installation folder, where your ```index.php``` file is placed (normally outside the application folder).
 
 Also you can override the default structure, check the [config guide](#Config_guide) for more details.
 
 **Assets permissions**
 
-Set the ```assets``` directory with writable permissions.
+Set the ```assets``` folder with writable permissions.
 
-**Theme example structure**
-
-Install the Bootstrap example theme with composer:
-
-	composer require dsv/attire-theme-bootstrap
-
-**Before we continue**
-
-Let's take a moment to review the initial project that we created and also the library that is already included.
-
-<div class="row" style="margin-bottom:30px;">
-	<div class="col-sm-12">
-		<img class="img-responsive img-thumbnail" src="{{ '/assets/img/take_a_look.png' | prepend: site.baseurl }}">
-	</div>
-</div>
+	sudo chmod -R 777 assets/
 
 ---
 
 Getting started
 ---------------
 
-Load the library in your controller:
+Like the [Twig basics](http://twig.sensiolabs.org/doc/api.html), Attire uses a central object called the environment. Instances of this class are used to store the configuration and extensions, and are used to load templates from the file system or other locations.
+
+This is the simplest way to configure Attire to load templates for your application:
 
 {% highlight PHP startinline %}
 $this->load->library('attire/attire'); 
+
+$this->attire->set_loader('filesystem');
+$this->attire->set_environment(array(
+	'cache' => '/path/to/compilation_cache',
+));
 {% endhighlight %}
 
-Next set the theme and layout:
+This will create a template environment with the default settings and a loader that looks up the templates in the ```/path/to/templates/``` folder. 
+
+##Installing a theme
+
+Attire supports theme instances that are quick start points for you to kick off your next project. So instead of create a central environment, a way more simple to start using Attire is creating a theme instance theme with a layout:
+
+**Bootstrap + Attire**
+
+Install the Bootstrap example theme with composer:
+
+	composer require dsv/attire-theme-bootstrap
+
+Bootstrap theme includes some example layout structures. 
 
 {% highlight PHP startinline %}
 $this->attire->set_theme('bootstrap');
 $this->attire->set_layout('jumbotron');
 {% endhighlight %}
-
-Bootstrap theme includes some example layout structures. 
 
 Chaining method also supported:
 
@@ -115,7 +120,7 @@ Finally display the theme with the render method.
 $this->attire->render();
 {% endhighlight %}
 
-**Example**
+Full example:
 
 {% highlight PHP startinline %}
 class Welcome extends CI_Controller 
@@ -123,8 +128,11 @@ class Welcome extends CI_Controller
 	public function index()
 	{	
 		$this->load->library('attire/attire');
-		$this->attire->set_theme('bootstrap')->set_layout('jumbotron');
-		$this->attire->render();
+
+		$this->attire
+			->set_theme('bootstrap')
+			->set_layout('jumbotron')
+			->render();
 	}
 }
 {% endhighlight %}
@@ -137,7 +145,7 @@ Preview:
 	</div>
 </div>
 
-This is the current output of the render method. Now you can use the [Bootstrap](http://getbootstrap.com/)  responsive framework in your application.
+Now you can use the [Bootstrap](http://getbootstrap.com/) responsive framework in your application.
 
 ---
 
@@ -152,7 +160,7 @@ $this->attire->add_view($view, $params);
 
 Where: 
 
-* ```$view``` is the view file path. 
+* ```$view``` is the view file path relative to ```VIEWPATH``` folder. 
 * ```$params``` is an array of variables used inside the view interface. 
 
 It's exactly like the Codeigniter's method: 
@@ -163,7 +171,7 @@ $this->load->view($view, $params);
 
 **Example**
 
-Create a view ```foo.php``` inside the ```VIEWPATH``` directory:
+Create a view ```foo.php``` inside the ```VIEWPATH``` folder:
 
 {% highlight HTML startinline %}
 <!-- application/views/foo.php -->
@@ -171,7 +179,7 @@ Create a view ```foo.php``` inside the ```VIEWPATH``` directory:
 <p>paragraph<p>
 {% endhighlight %}
 
-Next add the view without specifing the directory app and the extension:
+Next add the view without specifing the folder app and the extension:
 
 {% highlight PHP startinline %}
 class Welcome extends CI_Controller 
@@ -179,9 +187,12 @@ class Welcome extends CI_Controller
 	public function index()
 	{	
 		$this->load->library('attire/attire');
-		$this->attire->set_theme('bootstrap')->add_layout('jumbotron');
-		$this->attire->add_view('foo');
-		$this->attire->render();	
+		
+		$this->attire
+			->set_theme('bootstrap')
+			->add_layout('jumbotron')
+			->add_view('foo')
+			->render();	
 	}
 }
 {% endhighlight %}
@@ -203,11 +214,12 @@ class Welcome extends CI_Controller
 	{	
 		$this->load->library('attire/attire');
 
-		$this->attire->set_theme('bootstrap')
-			     ->set_layout('jumbotron')
-			     ->add_view('foo')
-			     ->add_view('fighters')
-			     ->render();	
+		$this->attire
+			->set_theme('bootstrap')
+			->set_layout('jumbotron')
+			->add_view('foo')
+			->add_view('fighters')
+			->render();	
 	}
 }
 {% endhighlight %}
@@ -221,7 +233,9 @@ class Welcome extends CI_Controller
 {
 	public function __construct()
 	{
+		parent::__construct();
 		$this->load->library('attire/attire');
+
 		$this->attire->set_theme('bootstrap')->add_layout('jumbotron');
 	}
 	
@@ -246,13 +260,16 @@ class Welcome extends CI_Controller
     {
         parent::__construct();
 	$this->load->library('attire/attire');
+
 	$this->attire->set_theme('bootstrap')->add_layout('jumbotron');
     }
 
 	public function index()
 	{
-	    $this->attire->add_path('/outside/viewpath/','some');
-	    $this->attire->add_view('@some/foo')->render();
+	    $this->attire
+	    	->add_path('/outside/viewpath/','some')
+	    	->add_view('@some/foo')
+	    	->render();
 	}
 }
 {% endhighlight %}
@@ -261,18 +278,20 @@ class Welcome extends CI_Controller
 Creating themes
 ---------------
 
-**Directory structure**
+**Folder structure**
 
-Create a new directory structure inside the theme directory:
+Create a new folder structure inside the theme folder:
 
 	+-theme/
 	| +-new_theme/
 	| | +-assets (all your theme asset files needed)
-	| | | +- css/* 
-	| | | +- js/*
+	| | | +- stylesheets/* 
+	| | | +- javascripts/*
+	| | | +- fonts/*
+	| | | +- images/*
 	| | +-layout
-	| | | +-new_layout.twig
-	| | +- theme.twig
+	| | | +-<new_layout>.twig
+	| | +- master.twig
 
 **The master theme**
 
@@ -281,42 +300,41 @@ This is the default template used in every **Attire** theme instance:
 {% highlight HTML %}
 {% raw %}
 <!DOCTYPE html>
-<html>
-	<head>
-		{% block head %}
-			<title>{% block title %}{% endblock %} - {{app_fullname|title}}</title>
-		{% endblock %}
-		{% block stylesheets %}
-			{% stylesheets 'css/*' filter='cssrewrite' %}
-			<link href="{{ base_url('assets/' ~ asset_url) }}" type="text/css" rel="stylesheet" />
-			{% endstylesheets %}		
-		{% endblock %}
-	</head>
-	<body>
-		{% block content %}{% endblock %}
-		<div id="footer">
-			{% block footer %}{% endblock %}
-		</div>
-		{% block javascripts %}
-			{% javascripts 'js/*' %}
-			<script src="{{ base_url('assets/' ~ asset_url) }}"></script>
-			{% endjavascripts %}
-		{% endblock %}
-	</body>
+<head lang="en">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	{% block head %}
+		<title>{% block title %}{% endblock %}</title>
+	{% endblock %}
+	<link rel="stylesheet" href="{{ pipeline.css }}">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->	
+</head>
+<body>
+	{% block content %}{% endblock %}
+	
+	<script src="{{ pipeline.js }}"></script>
+</body>
 </html>
 {% endraw %}
 {% endhighlight %}
 
-Copy this structure into your new **theme.twig** file. Use it as a basic template and create something unique.
+Copy this structure into your new ```master.twig``` file. Use it as a basic template and create something unique.
 
 **Layout**
 
-Same as ```theme.twig```, copy the ```layouts/new_layout.twig``` default template: 
+Same as the ```master.twig```, copy the ```layouts/new_layout.twig``` default template: 
 
 {% highlight HTML %}
 {% raw %}
-{% extends "theme.twig" %}
-{% block title %}{{'new_layout'|capitalize}}{% endblock %}
+{% extends "master.twig" %}
 
 {% block content %}
 	{% for view,params in views %}
@@ -338,8 +356,12 @@ class Welcome extends CI_Controller
 	public function index()
 	{	
 		$this->load->library('attire/attire');
-		$this->attire->set_theme('new_theme')->set_layout('new_layout');
-		$this->attire->add_view('welcome_message')->render();	
+		
+		$this->attire
+			->set_theme('new_theme')
+			->set_layout('new_layout')
+			->add_view('welcome_message')
+			->render();	
 	}
 }
 {% endhighlight %}
@@ -423,6 +445,79 @@ Now you can call the function:
 <p>{{foo_bar()}}</p>
 {% endraw %}
 {% endhighlight %}
+
+---
+
+Sprockets Pipeline
+------------------
+
+The Attire Asset Pipeline will read your main file (usually ```application.js``` or ```application.css```), read directives, and apply filters for all the files. 
+
+**Example**
+
+{% highlight HTML %}
+/**
+ * (see the "directive syntax" section below)
+ *= require jquery
+ *= require bootstrap.min
+ *= require lib/inputs/{text,password}
+ *= require_directory lib/loaders
+ */
+{% endhighlight %}
+
+**Asset Paths**
+
+The asset paths are divided by "modules" to be as flexible as it can:
+
+{% highlight PHP startinline %}
+array(
+	'template' => array(
+		'directories' => array(
+			'%theme%/assets/',
+			'_shared/assets/'
+		),
+		'prefixes' => array(
+			'js' => 'javascripts',
+			'css' => 'stylesheets',
+			'img' => 'images',
+			'font' => 'fonts'
+		)
+	),
+	'external' => array(
+		'directories' => array(
+			'bower_components/',
+			'vendor/components/'
+		)
+	)
+);
+{% endhighlight %}
+
+Each module have 2 keys: 
+
+* Directories: which list directories where the Pipeline must search files.
+* Prefixes: which will append the path for the extension to the directory.
+
+For example, if we run the **render** method, the pipeline will try to find the following files:
+
+	path/to/application/themes/%theme%/assets/javascripts/application.js
+	path/to/application/themes/_shared/assets/javascripts/application.js
+	path/to/bower_components/application.js
+	path/to/vendor/components/application.js
+
+Where:
+
+* **%theme%** being replaced by the library.
+
+This asset manager allows to use a Rails-like ```javascripts/``` directory for js file gracefully, also supports //= require jquery/dist/jquery to find ```path/to/bower_components/jquery/dist/jquery.js```
+
+Only the "meaningful" extension matters (using a whitelist).
+
+	/**
+	 * for example
+	 *= require datatables/js/jquery.dataTables
+	 * will find correctly the file named
+	 * "path/to/bower_components/datatables/js/jquery.dataTables.js.coffee"
+	 */
 
 ---
 

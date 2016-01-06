@@ -1,15 +1,11 @@
 - title: Solid Base
   icon: clone
-  description: Built with Twig Engine and Assetic Framework.
+  description: Built with Twig Engine and Sprockets-PHP Framework.
 
 - title: Highly Customizable
   icon: sliders
-  description: Easily customize Attire to work exactly how you want it to.
+  description: Easily customize to work exactly how you want it to.
 
 - title: Extendable
   icon: expand
   description: The template system allows you to build multiple themes and layouts.
-
-- title: Secure
-  icon: shield
-  description: Evaluate untrusted template code using a sandbox mode and output escaping.

@@ -1,0 +1,11 @@
+- title: 'Manageable'
+  icon: sitemap
+  description: "Manage your assets, templates and layouts by taking care of preprocessors and dependencies."
+
+- title: 'Compressible'
+  icon: 'compass'
+  description: Build with minification and caching extensions.
+
+- title: Secure
+  icon: shield
+  description: Evaluate untrusted template code using a sandbox mode and output escaping.
