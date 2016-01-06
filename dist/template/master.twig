@@ -7,18 +7,18 @@
 	{% block head %}
 		<title>{% block title %}{% endblock %}</title>
 	{% endblock %}
-	<link rel="stylesheet" href="{{ pipeline.css }}">
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->	
+	{% block stylesheets %}
+		<link rel="stylesheet" href="{{ pipeline.css }}">
+	{% endblock %}
 </head>
 <body>
-	{% block content %}{% endblock %}
-	
-	<script src="{{ pipeline.js }}"></script>
+	{% block content %}
+		{% for view,params in views %}
+			{% include view with params %}
+		{% endfor %}
+	{% endblock %}
+	{% block javascripts %}
+		<script src="{{ pipeline.js }}"></script>
+	{% endblock %}
 </body>
 </html>
