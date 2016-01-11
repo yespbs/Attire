@@ -373,7 +373,7 @@ Notice that you only need to specify the name of the template (without the exten
 Twig Environment
 ----------------
 
-Twig is flexible enough for all your needs, even the most complex ones. Attire implements Twig tags, filters and functions with ease thanks to for his open architecture.
+Attire is flexible enough for all your needs, even the most complex ones.
 
 **Globals**
 
@@ -385,7 +385,7 @@ $this->attire->add_global('text', new Text());
 
 Then you can use it as follows:
 
-{% highlight PHP startinline %}
+{% highlight HTML %}
 {{ text.lipsum(40) }}
 {% endhighlight %}
 
