@@ -386,7 +386,9 @@ $this->attire->add_global('text', new Text());
 Then you can use it as follows:
 
 {% highlight HTML %}
+{% raw %}
 {{ text.lipsum(40) }}
+{% endraw %}
 {% endhighlight %}
 
 **Filters**
