@@ -1,6 +1,6 @@
 - title: Solid Base
   icon: clone
-  description: Built with Twig Engine and Sprockets-PHP Framework.
+  description: Built with [Twig Engine](http://twig.sensiolabs.org/) and [Sprockets-PHP](https://github.com/vendethiel/Sprockets-PHP).
 
 - title: Highly Customizable
   icon: sliders
