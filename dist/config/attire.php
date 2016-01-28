@@ -23,7 +23,7 @@ $config['theme_path'] = APPPATH.'themes/';
 \	- inside your public directory.
 |
 */
-$config['assets_path'] = FCPATH.'assets/';
+$config['assets_path'] = FCPATH.'cache/';
 
 /*
 |--------------------------------------------------------------------------
