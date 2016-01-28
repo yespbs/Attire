@@ -207,7 +207,7 @@ class Attire
         $this->_set($config);
         // If not set the library paths, set it
         empty($this->theme_path)  && $this->theme_path = APPPATH.'themes/';
-        empty($this->assets_path) && $this->assets_path = FCPATH.'assets/';
+        empty($this->assets_path) && $this->assets_path = FCPATH.'cache/';
         // Add trailing slash if not set
         $this->theme_path  = rtrim($this->theme_path, '/').'/';
         $this->assets_path = rtrim($this->assets_path, '/').'/';
