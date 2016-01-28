@@ -56,7 +56,7 @@ Create this folder structure inside your CodeIgniter application:
 	+-APPPATH/
 	| +-themes/
 	+-FCPATH 
-	| +-assets/
+	| +-cache/
 
 Where:
 
