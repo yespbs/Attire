@@ -147,7 +147,7 @@ class Attire
 	 * Sprockets-PHP Pipeline manifest
 	 * @var string
 	 */
-	protected $_manifest = NULL;
+	protected $_manifest = 'theme';
 
 	/**
 	 * CI Instance
