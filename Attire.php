@@ -144,6 +144,12 @@ class Attire
 	protected $_cache_base = NULL;
 
 	/**
+	 * Sprockets-PHP Pipeline manifest
+	 * @var string
+	 */
+	protected $_manifest = NULL;
+
+	/**
 	 * CI Instance
 	 * 
 	 * @var object
@@ -613,6 +619,17 @@ class Attire
 	}
 
 	/**
+	 * Set Sprockets-PHP Pipeline Manifest 
+	 * 
+	 * @param string $file_path | Path without extension
+	 */
+	public function set_manifest($file_path = '')
+	{
+		$this->_manifest = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file_path);
+		return $this;
+	}	
+
+	/**
 	 * Render method
 	 * 
 	 * @param array $params | Params passed to the template as Twig variables.
@@ -633,7 +650,9 @@ class Attire
 			 * @todo Set pipeline cache dynamic options
 			 */
 			$vars    = array();
-			$options = array();
+			$options = array(
+				'manifest' => $this->_manifest
+			);
 			// Set the pipeline cache instances
 			$css_cache = new Sprockets\Cache($pipeline, 'css', $vars, $options);
 			$js_cache  = new Sprockets\Cache($pipeline, 'js', $vars, $options);
