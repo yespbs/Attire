@@ -8,18 +8,18 @@ menu:
   - setup: 
       Installation       : "#installation"
       Getting Started    : "#getting-started"
-      Installing a theme : "#installing-a-theme"
+      Installing Themes  : "#installing-themes"
       Adding Views       : "#adding-views"
+      Assets Manifests	 : "#assets-manifests"
   - user guide:
-      Creating themes  	 : "#creating-themes"
       Twig Environment 	 : "#twig-environment"
       Sprockets Pipeline : "#sprockets-pipeline"
+      Creating Themes  	 : "#creating-themes"      
   - get involved:
       Contributions    	 : "#contributions"
 ---
 
-Installation
-------------
+#Installation
 
 **With Composer:**
 
@@ -73,8 +73,7 @@ Set the ```assets``` folder with writable permissions.
 
 ---
 
-Getting started
----------------
+#Getting started
 
 Like the [Twig basics](http://twig.sensiolabs.org/doc/api.html), Attire uses a central object called the environment. Instances of this class are used to store the configuration and extensions, and are used to load templates from the file system or other locations.
 
@@ -91,7 +90,7 @@ $this->attire->set_environment(array(
 
 This will create a template environment with the default settings and a loader that looks up the templates in the ```/path/to/templates/``` folder. 
 
-##Installing a theme
+##Installing Themes
 
 Attire supports theme instances that are quick start points for you to kick off your next project. So instead of create a central environment, a way more simple to start using Attire is calling a theme instance with a layout:
 
@@ -149,8 +148,7 @@ Now you can use the [Bootstrap](http://getbootstrap.com/) responsive framework i
 
 ---
 
-Adding views
-------------
+#Adding views
 
 So far we've only displayed the default template and layout. You can add views to this layout using the ```add_view``` method.
 
@@ -190,7 +188,7 @@ class Welcome extends CI_Controller
 		
 		$this->attire
 			->set_theme('bootstrap')
-			->add_layout('jumbotron')
+			->set_layout('jumbotron')
 			->add_view('foo')
 			->render();	
 	}
@@ -236,7 +234,7 @@ class Welcome extends CI_Controller
 		parent::__construct();
 		$this->load->library('attire/attire');
 
-		$this->attire->set_theme('bootstrap')->add_layout('jumbotron');
+		$this->attire->set_theme('bootstrap')->set_layout('jumbotron');
 	}
 	
 	public function index()
@@ -261,7 +259,7 @@ class Welcome extends CI_Controller
         parent::__construct();
 	$this->load->library('attire/attire');
 
-	$this->attire->set_theme('bootstrap')->add_layout('jumbotron');
+	$this->attire->set_theme('bootstrap')->set_layout('jumbotron');
     }
 
 	public function index()
@@ -275,103 +273,70 @@ class Welcome extends CI_Controller
 {% endhighlight %}
 ---
 
-Creating themes
----------------
+#Assets Manifests
 
-**Folder structure**
+You can maintain separate assets calls in your controllers through the use of manifests. The manifest is a document that contains an ordered structure for reading asset files in the pipeline.
 
-Create a new folder structure inside the theme folder:
+Check the [Sprockets-PHP User Guide](#sprockets-pipeline) for more information.
 
-	+-theme/
-	| +-new_theme/
-	| | +-assets (all your theme asset files needed)
-	| | | +- stylesheets/* 
-	| | | +- javascripts/*
-	| | | +- fonts/*
-	| | | +- images/*
-	| | +-layout
-	| | | +-<new_layout>.twig
-	| | +- master.twig
-
-**The master theme**
-
-This is the default template used in every **Attire** theme instance:
-
-{% highlight HTML %}
-{% raw %}
-<!DOCTYPE html>
-<head lang="en">
-	<meta charset="utf-8">
-	<meta http-equiv="X-UA-Compatible" content="IE=edge">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<meta name="description" content="">
-	{% block head %}
-		<title>{% block title %}{% endblock %}</title>
-	{% endblock %}
-	<link rel="stylesheet" href="{{ pipeline.css }}">
-
-    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
-    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
-    <!--[if lt IE 9]>
-      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
-      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
-    <![endif]-->	
-</head>
-<body>
-	{% block content %}{% endblock %}
-	
-	<script src="{{ pipeline.js }}"></script>
-</body>
-</html>
-{% endraw %}
-{% endhighlight %}
-
-Copy this structure into your new ```master.twig``` file. Use it as a basic template and create something unique.
-
-**Layout**
-
-Same as the ```master.twig```, copy the ```layouts/new_layout.twig``` default template: 
-
-{% highlight HTML %}
-{% raw %}
-{% extends "master.twig" %}
-
-{% block content %}
-	{% for view,params in views %}
-		{% include view with params %}
-	{% endfor %}
-{% endblock %}
-{% endraw %}
-{% endhighlight %}
-
-Anything can be a layout, check the [twig extends docs](http://twig.sensiolabs.org/doc/tags/extends.html).
-
-**Rendering the theme**
-
-Set the new theme and structure, add the views and load it before sending the output to the browser.
+**Example 1**
 
 {% highlight PHP startinline %}
 class Welcome extends CI_Controller 
 {
+    public function __construct()
+    {
+        parent::__construct();
+	$this->load->library('attire/attire');
+
+	$this->attire->set_theme('bootstrap')->set_layout('jumbotron');
+    }
+
 	public function index()
-	{	
-		$this->load->library('attire/attire');
-		
-		$this->attire
-			->set_theme('new_theme')
-			->set_layout('new_layout')
-			->add_view('welcome_message')
-			->render();	
+	{
+	    $this->attire
+	    	->set_manifest('welcome/index/application')
+	    	->add_view('foo')
+	    	->render();
 	}
 }
 {% endhighlight %}
 
-Notice that you only need to specify the name of the template (without the extension `*.twig`).
+Next you can load everything you need for your controller's method in the manifest:
+
+{% highlight JS %}
+/**
+ * _shared/assets/javascripts/welcome/index/application.js
+ *
+ *= require jquery
+ *= require somefile
+ *= require etc
+ */
+{% endhighlight %}
+
+**Important**
+
+If you set a new manifest it's possible to call the **Theme Manifest**, so it will be reusable:
+
+{% highlight JS %}
+/**
+ * _shared/assets/javascripts/welcome/index/application.js
+ *
+ * Theme manifest
+ *= require /theme
+ *
+ * Other scripts
+ *= require jquery
+ *= require somefile
+ *= require etc
+ */
+{% endhighlight %}
+
+So every file included in ```'%theme%/assets/javascripts/theme.js``` will be required before all your manifest files included in ```_shared/assets/javascripts/welcome/index/application.js```.
 
 ---
 
-Twig Environment
-----------------
+#Twig Environment
 
 Attire is flexible enough for all your needs, even the most complex ones.
 
@@ -450,8 +415,7 @@ Now you can call the function:
 
 ---
 
-Sprockets Pipeline
-------------------
+#Sprockets Pipeline
 
 The Attire Asset Pipeline will read your main file (usually ```application.js``` or ```application.css```), read directives, and apply filters for all the files. 
 
@@ -506,11 +470,9 @@ For example, if we run the **render** method, the pipeline will try to find the 
 	path/to/bower_components/application.js
 	path/to/vendor/components/application.js
 
-Where:
+Where ```%theme%``` being replaced by Attire.
 
-* **%theme%** being replaced by the library.
-
-This asset manager allows to use a Rails-like ```javascripts/``` directory for js file gracefully, also supports //= require jquery/dist/jquery to find ```path/to/bower_components/jquery/dist/jquery.js```
+This asset manager allows to use a Rails-like ```javascripts/``` directory for js file gracefully, also supports `//= require jquery/dist/jquery` to find ```path/to/bower_components/jquery/dist/jquery.js```
 
 Only the "meaningful" extension matters (using a whitelist).
 
@@ -518,13 +480,120 @@ Only the "meaningful" extension matters (using a whitelist).
 	 * for example
 	 *= require datatables/js/jquery.dataTables
 	 * will find correctly the file named
-	 * "path/to/bower_components/datatables/js/jquery.dataTables.js.coffee"
+	 * "path/to/bower_components/datatables/js/jquery.dataTables.js"
 	 */
 
 ---
 
-Contributions
--------------
+#Creating themes
+
+**Folder structure**
+
+Create a new folder structure inside the theme folder:
+
+	+-theme/
+	| +-new_theme/
+	| | +-assets (all your theme asset files needed)
+	| | | +- stylesheets/theme.js
+	| | | +- javascripts/theme.css
+	| | | +- fonts/
+	| | | +- images/
+	| | +-layout
+	| | | +-<new_layout>.twig
+	| | +- master.twig
+
+**The master theme**
+
+This is the default template used in every **Attire** theme instance:
+
+{% highlight HTML %}
+{% raw %}
+<!DOCTYPE html>
+<head lang="en">
+	<meta charset="utf-8">
+	<meta http-equiv="X-UA-Compatible" content="IE=edge">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<meta name="description" content="">
+	{% block head %}
+		<title>{% block title %}{% endblock %}</title>
+	{% endblock %}
+	<link rel="stylesheet" href="{{ pipeline.css }}">
+
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!-- WARNING: Respond.js doesn't work if you view the page via file:// -->
+    <!--[if lt IE 9]>
+      <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+      <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+    <![endif]-->	
+</head>
+<body>
+	{% block content %}{% endblock %}
+	
+	<script src="{{ pipeline.js }}"></script>
+</body>
+</html>
+{% endraw %}
+{% endhighlight %}
+
+Copy this structure into your new ```master.twig``` file. Use it as a basic template and create something unique.
+
+**Layout**
+
+Same as the ```master.twig```, copy the ```layouts/new_layout.twig``` default template: 
+
+{% highlight HTML %}
+{% raw %}
+{% extends "master.twig" %}
+
+{% block content %}
+	{% for view,params in views %}
+		{% include view with params %}
+	{% endfor %}
+{% endblock %}
+{% endraw %}
+{% endhighlight %}
+
+Anything can be a layout, check the [twig extends docs](http://twig.sensiolabs.org/doc/tags/extends.html).
+
+**Assets**
+
+Place all your required assets inside the ```javascripts``` and ```stylesheets``` directories and inside your **Theme manifest** require the filename respectively:
+
+{% highlight JS %}
+/**
+ * %theme%/assets/javascripts/theme.js
+ *
+ *= require jquery
+ *= require somefile
+ *= require etc
+ */
+{% endhighlight %}
+
+**Rendering the theme**
+
+Set the new theme and structure, add the views and load it before sending the output to the browser.
+
+{% highlight PHP startinline %}
+class Welcome extends CI_Controller 
+{
+	public function index()
+	{	
+		$this->load->library('attire/attire');
+		
+		$this->attire
+			->set_theme('new_theme')
+			->set_layout('new_layout')
+			->add_view('welcome_message')
+			->render();	
+	}
+}
+{% endhighlight %}
+
+Notice that you only need to specify the name of the template (without the extension `*.twig`).
+
+---
+
+#Contributions
 
 The Attire project welcomes and depends on contributions from all developers in the **Codeigniter community**. 
 
