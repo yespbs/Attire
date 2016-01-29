@@ -11,7 +11,7 @@ Attire library supports template inheritance using **Twig** template engine and 
 
 ### Demo
 
-[![Attire Demo](http://img.youtube.com/vi/SwAzluknlNI/0.jpg)](https://www.youtube.com/watch?v=SwAzluknlNI)
+[![Attire Demo](http://img.youtube.com/vi/rhJiW1Rx5oc/0.jpg)](https://www.youtube.com/watch?v=rhJiW1Rx5oc)
 
 
 ### Other Twig Implementations for Codeigniter
