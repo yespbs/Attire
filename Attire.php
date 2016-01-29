@@ -165,6 +165,7 @@ class Attire
 	{
 		// Load CI Instance
         $this->_CI =& get_instance();
+        $this->_CI->load->helper('url');
         // Set the default Twig environment options
         $this->environment_options = array(
 			'charset'             => 'utf-8',
@@ -394,7 +395,7 @@ class Attire
 			switch (strtolower($type)) 
 			{
 				case 'filesystem':
-					$template_dirs = array(APPPATH.'libraries/attire/dist/template');
+					$template_dirs = array();
 					if (isset($this->theme)) 
 					{
 						$template_dirs[] = $this->theme_path.$this->theme;
@@ -403,6 +404,7 @@ class Attire
 					{
 						$template_dirs[] = $this->theme_path.$theme_name;
 					}
+					$template_dirs[] = APPPATH.'libraries/attire/dist/template';
 					$this->_loader = new Twig_Loader_Filesystem($template_dirs);
 					break;	
 
@@ -659,8 +661,8 @@ class Attire
 			// Store the cache paths
 			$this->global_vars['pipeline']['css'] = $css_cache;
 			$this->global_vars['pipeline']['js'] = $js_cache;
-			array_walk_recursive($this->global_vars['pipeline'], function(&$cache){
-				$cache = '/'.$this->_cache_base.basename((string) $cache);
+			array_walk_recursive($this->global_vars['pipeline'], function(&$cache) {
+				$cache = base_url('/'.$this->_cache_base.basename((string) $cache));
 			});
 			//Set additional stored config functions and global vars
 			$this->add_functions($this->functions);
@@ -679,7 +681,7 @@ class Attire
 					list($master, $params) = $this->_layout;
 				}
 				$master.= $this->file_extension;
-				$params['views'] = $this->_views;				
+				$params['views'] = $this->_views;			
 				
 				$template = $this->_environment->loadTemplate($master);
 				echo $template->render($params); 	
