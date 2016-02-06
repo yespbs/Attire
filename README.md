@@ -3,7 +3,6 @@
 #Attire
 
 An implementation of a template engine combined with an asset management framework for CodeIgniter 3.0.
-
 [![Latest Stable Version](https://poser.pugx.org/dsv/attire/v/stable)](https://packagist.org/packages/dsv/attire) [![Total Downloads](https://poser.pugx.org/dsv/attire/downloads)](https://packagist.org/packages/dsv/attire) [![Latest Unstable Version](https://poser.pugx.org/dsv/attire/v/unstable)](https://packagist.org/packages/dsv/attire) [![License](https://poser.pugx.org/dsv/attire/license)](https://packagist.org/packages/dsv/attire)
 ----
 
