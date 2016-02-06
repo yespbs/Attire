@@ -42,5 +42,8 @@
             "dev-master": "2.0.x-dev"
         },
         "installer-name": "attire"
+    },
+    "suggest": {
+        "dsv/attire-theme-bootstrap": "Use Bootstrap with Attire for a solid base for custom theme development."
     }    
 }
