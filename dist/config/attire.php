@@ -103,7 +103,7 @@ $config['pipeline_paths'] = array(
 	),
 	'external' => array(
 		'directories' => array(
-			'bower_components/'
+			FCPATH.'bower_components/'
 		)
 	)
 );
