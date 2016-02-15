@@ -239,7 +239,7 @@ class Attire
 	{
 		foreach ($config as $key => $val)
 		{
-			switch (strtolower($key)) 
+			switch ($key = strtolower($key)) 
 			{
 				case 'functions':
 				case 'environment_options':
