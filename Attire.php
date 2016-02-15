@@ -474,6 +474,24 @@ class Attire
 			 		->set_environment($options);
 	}
 
+	# ------------------------------------------------------------------------------------
+	# Bundle Extension
+	# ------------------------------------------------------------------------------------
+	
+	/**
+	 * Set Bundle viewpath
+	 *
+	 * @uses Codeigniter-Bundle::__constructor()
+	 * @param string $name Bundle name
+	 * @return object
+	 */
+	public function set_bundle($name)
+	{
+		return $this->add_path(BUNDLEPATH.rtrim($name,'/').'/views/','VIEWPATH');
+	}
+	
+	# ------------------------------------------------------------------------------------
+
 	/**
 	 * Add a layout in Twig
 	 *
