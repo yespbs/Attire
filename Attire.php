@@ -173,7 +173,8 @@ class Attire
 			'cache'               => FALSE,
 			'auto_reload'         => FALSE,
 			'strict_variables'    => FALSE,
-			'autoescape'          => TRUE	
+			'autoescape'          => TRUE,
+			'debug'               => FALSE	
 		);
 		// Set the default Twig extensions
 		$this->extensions = array(
@@ -215,7 +216,7 @@ class Attire
         // Set an absolute path to all pipeline assets:
         array_walk($this->pipeline_paths['template']['directories'], function(&$path){ 
         	$path = $this->theme_path.rtrim($path,'/').'/';
-        });
+        });      
         // Also append the default library assets path
         array_push($this->pipeline_paths['template']['directories'], 
         	APPPATH.'libraries/attire/dist/template/assets'
@@ -444,10 +445,16 @@ class Attire
 			{
 				throw new Exception("Twig_LoaderInterface isn't set correctly.");
 			}
+			$this->environment_options = array_merge($this->environment_options, $options);
+			
 			$this->_environment = new Twig_Environment(
 				$this->_loader, 
-				array_merge($this->environment_options, $options)
+				$this->environment_options
 			);
+			if ($this->environment_options['debug'] !== FALSE) 
+			{
+				$this->_environment->addExtension(new Twig_Extension_Debug());
+			}
 		} 
 		catch (Exception $e) 
 		{
@@ -474,23 +481,29 @@ class Attire
 			 		->set_environment($options);
 	}
 
-	# ------------------------------------------------------------------------------------
-	# Bundle Extension
-	# ------------------------------------------------------------------------------------
-	
 	/**
-	 * Set Bundle viewpath
-	 *
-	 * @uses Codeigniter-Bundle::__constructor()
-	 * @param string $name Bundle name
-	 * @return object
+	 * Set @VIEWPATH
+	 * 
+	 * Notes:
+	 * 	- This method is currrently used by Modular environments.
+	 * 
+	 * @param string $name Absolute view path
 	 */
-	public function set_bundle($name)
+	public function set_main_viewpath($path)
 	{
-		return $this->add_path(BUNDLEPATH.rtrim($name,'/').'/views/','VIEWPATH');
+		$paths = explode(DIRECTORY_SEPARATOR, rtrim($path,'/'));
+		switch (end($paths)) 
+		{
+			case 'view':
+			case 'views':
+				break;
+			
+			default:
+				$path = implode(DIRECTORY_SEPARATOR, $paths).'/views';
+				break;
+		}
+		return $this->add_path($path, 'VIEWPATH');
 	}
-	
-	# ------------------------------------------------------------------------------------
 
 	/**
 	 * Add a layout in Twig
@@ -633,7 +646,7 @@ class Attire
 		} 
 		catch (Exception $e) 
 		{
-			show_error($e->getMessage(), 404, 'Attire::add_global()');
+			show_error($e->getMessage(), 404, 'Attire::add_globals()');
 		}
 		return $this;
 	}
