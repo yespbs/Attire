@@ -613,6 +613,12 @@ class Attire
 			{
 				throw new Exception("Set global first param as string.");
 			}
+			if (strpos($name, '.') !== FALSE) 
+			{
+				list($element, $key) = explode('.', $name);
+				$this->global_vars[$element][$key] = $value;
+				return $this;
+			}			
 			if (! $this->_environment instanceof Twig_Environment) 
 			{
 				throw new Exception("Twig_Environment isn't set correctly.");
