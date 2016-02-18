@@ -487,22 +487,19 @@ class Attire
 	 * Notes:
 	 * 	- This method is currrently used by Modular environments.
 	 * 
-	 * @param string $name Absolute view path
+	 * @param string $path 		  Absolute view path
+	 * @param string $view_folder Name of the @VIEW folder inside the $path
+	 *                            (CI default: views)
 	 */
-	public function set_main_viewpath($path)
+	public function set_main_viewpath($path, $view_folder='views')
 	{
-		$paths = explode(DIRECTORY_SEPARATOR, rtrim($path,'/'));
-		switch (end($paths)) 
-		{
-			case 'view':
-			case 'views':
-				break;
-			
-			default:
-				$path = implode(DIRECTORY_SEPARATOR, $paths).'/views';
-				break;
-		}
-		return $this->add_path($path, 'VIEWPATH');
+		$patterns = array('/view/','/views/');
+		$path = rtrim(preg_replace(
+			$patterns, 
+			array_fill(0, count($patterns), ''), 
+			$path),
+		'/');
+		return $this->add_path($path.'/'.$view_folder, 'VIEWPATH');
 	}
 
 	/**
