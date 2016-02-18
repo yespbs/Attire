@@ -304,7 +304,7 @@ class Attire
 			foreach ($functions as $name => $function) 
 			{
 				//Let's try to make a function of first arg.
-				(! is_callable($function)) && $function = $name;
+				(! is_callable($name)) && $function = $name;
 				//Finally let's try to add the function
 				$this->_environment->addFunction(new Twig_SimpleFunction($name, $function));			
 			}
