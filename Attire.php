@@ -704,7 +704,15 @@ class Attire
 			//Set additional stored config functions and global vars
 			$this->add_functions($this->functions);
 			$this->add_globals($this->global_vars);
-
+			//Call Codeigniter variable functions
+			$this->_environment->addFunction(
+				'ci_*',
+				new Twig_Function_Function(function(){
+					$args = func_get_args();
+					$function = array_shift($args);
+					return call_user_func_array($function, $args);
+				})
+			);
 			if ($this->_loader instanceof Twig_Loader_Filesystem) 
 			{	
 				$this->_loader->prependPath(VIEWPATH, 'VIEWPATH');
