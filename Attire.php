@@ -145,9 +145,9 @@ class Attire
 
 	/**
 	 * Sprockets-PHP Pipeline manifest
-	 * @var string
+	 * @var array
 	 */
-	protected $_manifest = 'theme';
+	protected $_manifest = array('default' => 'theme');
 
 	/**
 	 * CI Instance
@@ -482,27 +482,6 @@ class Attire
 	}
 
 	/**
-	 * Set @VIEWPATH
-	 * 
-	 * Notes:
-	 * 	- This method is currrently used by Modular environments.
-	 * 
-	 * @param string $path 		  Absolute view path
-	 * @param string $view_folder Name of the @VIEW folder inside the $path
-	 *                            (CI default: views)
-	 */
-	public function set_main_viewpath($path, $view_folder='views')
-	{
-		$patterns = array('/view/','/views/');
-		$path = rtrim(preg_replace(
-			$patterns, 
-			array_fill(0, count($patterns), ''), 
-			$path),
-		'/');
-		return $this->add_path($path.'/'.$view_folder, 'VIEWPATH');
-	}
-
-	/**
 	 * Add a layout in Twig
 	 *
 	 * Layout views are rendered in the output in the order they added.
@@ -654,16 +633,55 @@ class Attire
 		return $this;
 	}
 
+	#################################################################################
+	# Modular environment
+	#################################################################################
+
+	/**
+	 * Set @VIEWPATH
+	 * 
+	 * @param string $path 		  Absolute view path
+	 * @param string $view_folder Name of the @VIEW folder inside the $path
+	 *                            (CI default: views)
+	 */
+	public function set_mainview_path($path, $view_folder='views')
+	{
+		$patterns = array('/view/','/views/');
+		$path = rtrim(preg_replace(
+			$patterns, 
+			array_fill(0, count($patterns), ''), 
+			$path),
+		'/');
+		return $this->add_path($path.'/'.$view_folder, 'VIEWPATH');
+	}
+
+	/**
+	 * Add pipeline path
+	 * 
+	 * @param string $path | Relative path
+	 * @param string $type | Pipeline type (template,external)
+	 */
+	public function add_pipeline_path($path, $type = 'template')
+	{
+		array_push($this->pipeline_paths[$type]['directories'], $path);
+		return $this;
+	}
+
 	/**
 	 * Set Sprockets-PHP Pipeline Manifest 
 	 * 
-	 * @param string $file_path | Path without extension
+	 * @param string  $file_path | Path without extension
+	 * @param sttring $type      | Manifest type (js/css)
+	 * @param bool 	  $overwrite | Overwrite the file list cache (MODE)
 	 */
-	public function set_manifest($file_path = '')
+	public function set_manifest($file_path = '', $type = 'default', $overwrite = TRUE)
 	{
-		$this->_manifest = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file_path);
+		$type === NULL && $type = 'default';
+		$this->_manifest[$type] = array(preg_replace('/\\.[^.\\s]{3,4}$/', '', $file_path), $overwrite);
 		return $this;
 	}	
+
+	#################################################################################
 
 	/**
 	 * Render method
@@ -677,31 +695,31 @@ class Attire
 			$this->_CI->benchmark->mark('Attire Render Time_start');
 			if (! is_writable($this->pipeline_paths['CACHE_DIRECTORY'])) 
 			{
-				throw new Exception("Error Processing Request");
+				throw new Exception(
+					'CACHE_DIRECTORY:['
+					.$this->pipeline_paths["CACHE_DIRECTORY"]
+					.'] is not writeable.');
 			}
 			// Create Sprockets pipeline instance
 			$pipeline = new Sprockets\Pipeline($this->pipeline_paths);
-			/**
-			 * Set the pipeline cache params
-			 * @todo Set pipeline cache dynamic options
-			 */
-			$vars    = array();
-			$options = array(
-				'manifest' => $this->_manifest
-			);
-			// Set the pipeline cache instances
-			$css_cache = new Sprockets\Cache($pipeline, 'css', $vars, $options);
-			$js_cache  = new Sprockets\Cache($pipeline, 'js', $vars, $options);
-			// Store the cache paths
-			$this->global_vars['pipeline']['css'] = $css_cache;
-			$this->global_vars['pipeline']['js'] = $js_cache;
+			// Set the pipeline cache params
+			foreach (array('css','js') as $key) 
+			{
+				//Configure Sprockets-PHP Cache
+				$vars    = array();
+				$options = array();
+
+				list($options['manifest'], $options['force']) = isset($this->_manifest[$key])
+					? $this->_manifest[$key]
+					: $this->_manifest['default'];
+				$this->global_vars['pipeline'][$key] = new Sprockets\Cache(
+					$pipeline, $key, $vars, $options
+				);
+			}
 			array_walk_recursive($this->global_vars['pipeline'], function(&$cache) {
 				$cache = base_url('/'.$this->_cache_base.basename((string) $cache));
 			});
-			//Set additional stored config functions and global vars
-			$this->add_functions($this->functions);
-			$this->add_globals($this->global_vars);
-			//Call Codeigniter variable functions
+			//Set Codeigniter variable functions
 			$this->_environment->addFunction(
 				'ci_*',
 				new Twig_Function_Function(function(){
@@ -710,6 +728,13 @@ class Attire
 					return call_user_func_array($function, $args);
 				})
 			);
+			/**
+			 * Set additional functions and global vars stored in:
+			 * 		path/to/application/config/attire.php
+			 */
+			$this->add_functions($this->functions);
+			$this->add_globals($this->global_vars);
+
 			if ($this->_loader instanceof Twig_Loader_Filesystem) 
 			{	
 				$this->_loader->prependPath(VIEWPATH, 'VIEWPATH');
