@@ -3,23 +3,23 @@ layout: page
 title: Docs
 fulltitle: Documentation
 permalink: /docs/
-description: ""
 menu:
   - setup: 
       Installation       : "#installation"
       Getting Started    : "#getting-started"
       Installing Themes  : "#installing-themes"
       Adding Views       : "#adding-views"
-      Assets Manifests	 : "#assets-manifests"
   - user guide:
       Twig Environment 	 : "#twig-environment"
       Sprockets Pipeline : "#sprockets-pipeline"
-      Creating Themes  	 : "#creating-themes"      
+      Asset Manifests	 : "#assets-manifests" 
+      HMVC Environment   : "#hmvc-environment"          
   - get involved:
+      Creating Themes  	 : "#creating-themes"   
       Contributions    	 : "#contributions"
 ---
 
-#Installation
+##Installation
 
 **With Composer:**
 
@@ -46,8 +46,8 @@ $config['composer_autoload'] = '/path/to/vendor/autoload.php';
 Attire use one config file to retrieve configuration preferences. Copy the **dist/config/attire.php** file inside your config folder:
 
 	+-APPPATH/
-	| | +-config/
-	| | | +-attire.php
+	| +-config/
+	| | +-attire.php
 
 **folder structure**
 
@@ -55,8 +55,9 @@ Create this folder structure inside your CodeIgniter application:
 
 	+-APPPATH/
 	| +-themes/
-	+-FCPATH 
-	| +-cache/
+	+-FCPATH
+	| +-public/
+	| | +-assets/
 
 Where:
 
@@ -69,20 +70,20 @@ Also you can override the default structure, check the [config guide](#Config_gu
 
 Set the ```assets``` folder with writable permissions.
 
-	sudo chmod -R 777 assets/
+	sudo chmod 777 /path/to/public/assets/
 
 ---
 
-#Getting started
+##Getting started
 
-Like the [Twig basics](http://twig.sensiolabs.org/doc/api.html), Attire uses a central object called the environment. Instances of this class are used to store the configuration and extensions, and are used to load templates from the file system or other locations.
+Attire uses a central object called the environment exactly like [Twig](http://twig.sensiolabs.org/doc/api.html). Instances of this class are used to store the configuration and extensions, and are used to load templates from the file system or other locations.
 
 This is the simplest way to configure Attire to load templates for your application:
 
 {% highlight PHP startinline %}
 $this->load->library('attire/attire'); 
 
-$this->attire->set_loader('filesystem');
+$this->attire->set_loader('filesystem','path/to/templates/');
 $this->attire->set_environment(array(
 	'cache' => '/path/to/compilation_cache',
 ));
@@ -90,9 +91,11 @@ $this->attire->set_environment(array(
 
 This will create a template environment with the default settings and a loader that looks up the templates in the ```/path/to/templates/``` folder. 
 
-##Installing Themes
+###Installing Themes
 
-Attire supports theme instances that are quick start points for you to kick off your next project. So instead of create a central environment, a way more simple to start using Attire is calling a theme instance with a layout:
+Attire supports theme instances that are quick start points for you to kick off your next project. 
+
+Instead of create a central environment, a way more simple to start using Attire is calling a theme instance with a layout.
 
 **Bootstrap + Attire**
 
@@ -148,7 +151,7 @@ Now you can use the [Bootstrap](http://getbootstrap.com/) responsive framework i
 
 ---
 
-#Adding views
+##Adding views
 
 So far we've only displayed the default template and layout. You can add views to this layout using the ```add_view``` method.
 
@@ -177,7 +180,7 @@ Create a view ```foo.php``` inside the ```VIEWPATH``` folder:
 <p>paragraph<p>
 {% endhighlight %}
 
-Next add the view without specifing the folder app and the extension:
+Next add the view without specifying the folder app and the extension:
 
 {% highlight PHP startinline %}
 class Welcome extends CI_Controller 
@@ -224,7 +227,7 @@ class Welcome extends CI_Controller
 
 **Example 2**
 
-Implement the same theme and layout structure for all your controller method's: 
+Implement the same theme and layout structure for all your controller methods: 
 
 {% highlight PHP startinline %}
 class Welcome extends CI_Controller 
@@ -273,70 +276,7 @@ class Welcome extends CI_Controller
 {% endhighlight %}
 ---
 
-#Assets Manifests
-
-You can maintain separate assets calls in your controllers through the use of manifests. The manifest is a document that contains an ordered structure for reading asset files in the pipeline.
-
-Check the [Sprockets-PHP User Guide](#sprockets-pipeline) for more information.
-
-**Example 1**
-
-{% highlight PHP startinline %}
-class Welcome extends CI_Controller 
-{
-    public function __construct()
-    {
-        parent::__construct();
-	$this->load->library('attire/attire');
-
-	$this->attire->set_theme('bootstrap')->set_layout('jumbotron');
-    }
-
-	public function index()
-	{
-	    $this->attire
-	    	->set_manifest('welcome/index/application')
-	    	->add_view('foo')
-	    	->render();
-	}
-}
-{% endhighlight %}
-
-Next you can load everything you need for your controller's method in the manifest:
-
-{% highlight JS %}
-/**
- * _shared/assets/javascripts/welcome/index/application.js
- *
- *= require jquery
- *= require somefile
- *= require etc
- */
-{% endhighlight %}
-
-**Important**
-
-If you set a new manifest it's possible to call the **Theme Manifest**, so it will be reusable:
-
-{% highlight JS %}
-/**
- * _shared/assets/javascripts/welcome/index/application.js
- *
- * Theme manifest
- *= require /theme
- *
- * Other scripts
- *= require jquery
- *= require somefile
- *= require etc
- */
-{% endhighlight %}
-
-So every file included in ```'%theme%/assets/javascripts/theme.js``` will be required before all your manifest files included in ```_shared/assets/javascripts/welcome/index/application.js```.
-
----
-
-#Twig Environment
+##Twig Environment
 
 Attire is flexible enough for all your needs, even the most complex ones.
 
@@ -358,7 +298,7 @@ Then you can use it as follows:
 
 **Filters**
 
-Attire implements ```Twig_SimpleFilter``` objects. This is usefull when you're integrating third-party libraries, helpers or libraries that needed inside the views.
+Attire implements ```Twig_SimpleFilter``` objects. This is useful when you're integrating third-party libraries, helpers or libraries that needed inside the views.
 
 {% highlight PHP startinline %}
 // Closure function
@@ -415,7 +355,7 @@ Now you can call the function:
 
 ---
 
-#Sprockets Pipeline
+##Sprockets Pipeline
 
 The Attire Asset Pipeline will read your main file (usually ```application.js``` or ```application.css```), read directives, and apply filters for all the files. 
 
@@ -476,16 +416,88 @@ This asset manager allows to use a Rails-like ```javascripts/``` directory for j
 
 Only the "meaningful" extension matters (using a whitelist).
 
+**Example**
+
 	/**
-	 * for example
 	 *= require datatables/js/jquery.dataTables
-	 * will find correctly the file named
-	 * "path/to/bower_components/datatables/js/jquery.dataTables.js"
 	 */
+
+Will find correctly the file named `path/to/bower_components/datatables/js/jquery.dataTables.js`.
+
+Check the [Sprockets-PHP User Guide](#sprockets-pipeline) for more information.
 
 ---
 
-#Creating themes
+##Asset Manifests
+
+You can maintain separate assets calls in your controllers through the use of manifests. The manifest is a document that contains an ordered structure for reading asset files in the pipeline.
+
+**Example 1**
+
+{% highlight PHP startinline %}
+class Welcome extends CI_Controller 
+{
+    public function __construct()
+    {
+        parent::__construct();
+	$this->load->library('attire/attire');
+
+	$this->attire->set_theme('bootstrap')->set_layout('jumbotron');
+    }
+
+	public function index()
+	{
+	    $this->attire
+	    	->set_manifest('welcome/index/application','js')
+	    	->add_view('foo')
+	    	->render();
+	}
+}
+{% endhighlight %}
+
+Next you can load everything you need for your controller's method in the manifest:
+
+{% highlight JS %}
+/**
+ * _shared/assets/javascripts/welcome/index/application.js
+ *
+ *= require jquery
+ *= require somefile
+ *= require etc
+ */
+{% endhighlight %}
+
+**Important!**
+
+If you set a new manifest it's possible to call the **Theme Manifest**, so it will be reusable:
+
+{% highlight JS %}
+/**
+ * _shared/assets/javascripts/welcome/index/application.js
+ *
+ * Theme manifest
+ *= require /theme
+ *
+ * Other scripts
+ *= require jquery
+ *= require somefile
+ *= require etc
+ */
+{% endhighlight %}
+
+So every file included in ```'%theme%/assets/javascripts/theme.js``` will be required before all your manifest files.
+
+---
+
+##HMVC Environment
+
+Attire latest version (v2.2.1) now supports HMVC environment.
+
+For more information check the wiki related to [HMVC Environment](https://github.com/davidsosavaldes/Attire/wiki/Modular-Environment) configurations.
+
+---
+
+##Creating themes
 
 **Folder structure**
 
@@ -593,7 +605,7 @@ Notice that you only need to specify the name of the template (without the exten
 
 ---
 
-#Contributions
+##Contributions
 
 The Attire project welcomes and depends on contributions from all developers in the **Codeigniter community**. 
 
