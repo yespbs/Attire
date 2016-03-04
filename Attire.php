@@ -192,16 +192,15 @@ class Attire
 					'_shared/assets/'
 				),
 				'prefixes' => array(
-					'js' => 'javascripts',
-					'css' => 'stylesheets',
-					'img' => 'images',
+					'js'   => 'javascripts',
+					'css'  => 'stylesheets',
+					'img'  => 'images',
 					'font' => 'fonts'
 				)
 			),
 			'external' => array(
 				'directories' => array(
-					'vendor/bower/',
-					'vendor/components/'
+					FCPATH.'bower_components/'
 				)
 			)
 		);
@@ -209,13 +208,13 @@ class Attire
         $this->_set($config);
         // If not set the library paths, set it
         empty($this->theme_path)  && $this->theme_path = APPPATH.'themes/';
-        empty($this->assets_path) && $this->assets_path = FCPATH.'cache/';
+        empty($this->assets_path) && $this->assets_path = FCPATH.'public/assets/';
         // Add trailing slash if not set
         $this->theme_path  = rtrim($this->theme_path, '/').'/';
         $this->assets_path = rtrim($this->assets_path, '/').'/';
         // Set an absolute path to all pipeline assets:
         array_walk($this->pipeline_paths['template']['directories'], function(&$path){ 
-        	$path = $this->theme_path.rtrim($path,'/').'/';
+        	$path = str_replace($this->theme_path, '', $this->theme_path.rtrim($path,'/').'/');
         });      
         // Also append the default library assets path
         array_push($this->pipeline_paths['template']['directories'], 
