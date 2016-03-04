@@ -214,7 +214,7 @@ class Attire
         $this->assets_path = rtrim($this->assets_path, '/').'/';
         // Set an absolute path to all pipeline assets:
         array_walk($this->pipeline_paths['template']['directories'], function(&$path){ 
-        	$path = str_replace($this->theme_path, '', $this->theme_path.rtrim($path,'/').'/');
+        	$path = $this->theme_path.str_replace($this->theme_path, '', rtrim($path,'/')).'/';
         });      
         // Also append the default library assets path
         array_push($this->pipeline_paths['template']['directories'], 
