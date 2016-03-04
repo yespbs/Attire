@@ -74,7 +74,7 @@ Set the ```assets``` folder with writable permissions.
 
 ---
 
-##Getting started
+## Getting started
 
 Attire uses a central object called the environment exactly like [Twig](http://twig.sensiolabs.org/doc/api.html). Instances of this class are used to store the configuration and extensions, and are used to load templates from the file system or other locations.
 
@@ -91,7 +91,7 @@ $this->attire->set_environment(array(
 
 This will create a template environment with the default settings and a loader that looks up the templates in the ```/path/to/templates/``` folder. 
 
-###Installing Themes
+### Installing Themes
 
 Attire supports theme instances that are quick start points for you to kick off your next project. 
 
@@ -151,7 +151,7 @@ Now you can use the [Bootstrap](http://getbootstrap.com/) responsive framework i
 
 ---
 
-##Adding views
+## Adding views
 
 So far we've only displayed the default template and layout. You can add views to this layout using the ```add_view``` method.
 
@@ -276,7 +276,7 @@ class Welcome extends CI_Controller
 {% endhighlight %}
 ---
 
-##Twig Environment
+## Twig Environment
 
 Attire is flexible enough for all your needs, even the most complex ones.
 
@@ -355,7 +355,7 @@ Now you can call the function:
 
 ---
 
-##Sprockets Pipeline
+## Sprockets Pipeline
 
 The Attire Asset Pipeline will read your main file (usually ```application.js``` or ```application.css```), read directives, and apply filters for all the files. 
 
@@ -428,7 +428,7 @@ Check the [Sprockets-PHP User Guide](#sprockets-pipeline) for more information.
 
 ---
 
-##Asset Manifests
+## Asset Manifests
 
 You can maintain separate assets calls in your controllers through the use of manifests. The manifest is a document that contains an ordered structure for reading asset files in the pipeline.
 
@@ -489,7 +489,7 @@ So every file included in ```'%theme%/assets/javascripts/theme.js``` will be req
 
 ---
 
-##HMVC Environment
+## HMVC Environment
 
 Attire latest version (v2.2.1) now supports HMVC environment.
 
@@ -605,7 +605,7 @@ Notice that you only need to specify the name of the template (without the exten
 
 ---
 
-##Contributions
+## Contributions
 
 The Attire project welcomes and depends on contributions from all developers in the **Codeigniter community**. 
 
