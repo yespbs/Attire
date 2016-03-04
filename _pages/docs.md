@@ -19,7 +19,7 @@ menu:
       Contributions    	 : "#contributions"
 ---
 
-##Installation
+## Installation
 
 **With Composer:**
 
