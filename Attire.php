@@ -673,10 +673,10 @@ class Attire
 	 * @param sttring $type      | Manifest type (js/css)
 	 * @param bool 	  $overwrite | Overwrite the file list cache (MODE)
 	 */
-	public function set_manifest($file_path = '', $type = 'default', $overwrite = TRUE)
+	public function set_manifest($file_path = '', $type = 'default')
 	{
 		$type === NULL && $type = 'default';
-		$this->_manifest[$type] = array(preg_replace('/\\.[^.\\s]{3,4}$/', '', $file_path), $overwrite);
+		$this->_manifest[$type] = preg_replace('/\\.[^.\\s]{3,4}$/', '', $file_path);
 		return $this;
 	}	
 
@@ -708,7 +708,7 @@ class Attire
 				$vars    = array();
 				$options = array();
 
-				list($options['manifest'], $options['force']) = isset($this->_manifest[$key])
+				$options['manifest'] = isset($this->_manifest[$key])
 					? $this->_manifest[$key]
 					: $this->_manifest['default'];
 				$this->global_vars['pipeline'][$key] = new Sprockets\Cache(
