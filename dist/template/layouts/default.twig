@@ -1,8 +1,6 @@
 {% extends "master.twig" %}
 {% block content %}
-	<section class="view">
-		{% for view, params in views %}
-			{% include view with params %}
-		{% endfor %}
-	</section>
+	{% for view, params in views %}
+		{% include view with params %}
+	{% endfor %}
 {% endblock %}

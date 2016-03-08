@@ -127,7 +127,7 @@ class Attire
 	 * 
 	 * @var string
 	 */
-	protected $_layout = NULL;
+	protected $_layout = 'default';
 
 	/**
 	 * Stored views with their params
