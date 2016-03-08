@@ -218,7 +218,7 @@ class Attire
         });      
         // Also append the default library assets path
         array_push($this->pipeline_paths['template']['directories'], 
-        	APPPATH.'libraries/attire/dist/template/assets'
+        	APPPATH.'libraries/attire/dist/template/assets/'
         );
         // Set pipeline cache path (required)
         $this->pipeline_paths['CACHE_DIRECTORY'] = $this->assets_path;
