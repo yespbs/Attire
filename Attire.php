@@ -222,7 +222,7 @@ class Attire
         );
         // Set pipeline cache path (required)
         $this->pipeline_paths['CACHE_DIRECTORY'] = $this->assets_path;
-        $this->_cache_base = basename($this->assets_path).'/';
+        $this->_cache_base = rtrim(str_replace(FCPATH,'', $this->assets_path));
         // Set if we need the Twig built-in autoloader
         if ($this->auto_register !== FALSE) 
         {
