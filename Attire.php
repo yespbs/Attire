@@ -127,7 +127,7 @@ class Attire
 	 * 
 	 * @var string
 	 */
-	protected $_layout = 'default';
+	protected $_layout = array('default', array());
 
 	/**
 	 * Stored views with their params
@@ -218,7 +218,7 @@ class Attire
         });      
         // Also append the default library assets path
         array_push($this->pipeline_paths['template']['directories'], 
-        	APPPATH.'libraries/attire/dist/template/assets'
+        	APPPATH.'libraries/attire/dist/template/assets/'
         );
         // Set pipeline cache path (required)
         $this->pipeline_paths['CACHE_DIRECTORY'] = $this->assets_path;
@@ -490,6 +490,7 @@ class Attire
 	 */
 	public function set_layout($name, array $params = array())
 	{
+		is_null($name) && $name = 'default'; # Set default name
 		$this->_layout = array('layouts/'.$name, $params);
 		return $this;
 	}
