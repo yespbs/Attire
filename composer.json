@@ -23,7 +23,7 @@
         "php": ">=5.2.4",
         "composer/installers": "*",
         "twig/twig": "^1.18",
-        "vendethiel/sprockets-php": "^2.1"
+        "vendethiel/sprockets-php": "dev-master"
     }, 
     "homepage": "https://github.com/davidsosavaldes/Attire",
     "authors": [
