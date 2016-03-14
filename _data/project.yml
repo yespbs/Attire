@@ -2,7 +2,7 @@ url: https://github.com/davidsosavaldes/Attire
 issues: https://github.com/davidsosavaldes/Attire/issues
 releases: https://github.com/davidsosavaldes/Attire/wiki/Release-Notes
 motto: "Attire is an implementation of a template engine combined with an asset management framework for CodeIgniter 3.0."
-version: 2.2.1
+version: 2.2.6
 demo:
   url: "https://www.youtube-nocookie.com/embed/rhJiW1Rx5oc?rel=0&amp;showinfo=0&amp;hd=1"
-  description: Fronted arquitecture in less of 2 minutes.
+  description: Fronted arquitecture under 2 minutes.

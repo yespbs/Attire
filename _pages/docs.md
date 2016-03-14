@@ -569,7 +569,7 @@ Anything can be a layout, check the [twig extends docs](http://twig.sensiolabs.o
 
 **Assets**
 
-Place all your required assets inside the ```javascripts``` and ```stylesheets``` directories and inside your **Theme manifest** require the filename respectively:
+Place all your required assets inside the ```javascripts``` and ```stylesheets``` directories and inside your **Theme manifest** :
 
 {% highlight JS %}
 /**
