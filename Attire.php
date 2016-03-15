@@ -616,14 +616,27 @@ class Attire
 	public function add_globals(array $globals)
 	{
 		try 
-		{
+		{			
 			if (! $this->_environment instanceof Twig_Environment) 
 			{
 				throw new Exception("Twig_Environment isn't set correctly.");
 			}
 			foreach ($globals as $name => $value) 
 			{
-				$this->_environment->addGlobal($name, $value);
+				if (! is_string($name)) 
+				{
+					throw new Exception("Set global first param as string.");
+				}
+				
+				if (strpos($name, '.') !== FALSE) 
+				{
+					list($element, $key) = explode('.', $name);
+					$this->global_vars[$element][$key] = $value;
+				}					
+				else
+				{
+					$this->_environment->addGlobal($name, $value);
+				}
 			}
 		} 
 		catch (Exception $e) 
@@ -632,7 +645,6 @@ class Attire
 		}
 		return $this;
 	}
-
 	#################################################################################
 	# Modular environment
 	#################################################################################
