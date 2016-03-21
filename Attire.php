@@ -404,6 +404,9 @@ class Attire
 					{
 						$template_dirs[] = $this->theme_path.$theme_name;
 					}
+					// add withing VIEWPATH include feature
+					$template_dirs[] = VIEWPATH;
+
 					$template_dirs[] = APPPATH.'libraries/attire/dist/template';
 					$this->_loader = new Twig_Loader_Filesystem($template_dirs);
 					break;	
@@ -700,7 +703,7 @@ class Attire
 	 * 
 	 * @param array $params | Params passed to the template as Twig variables.
 	 */
-	public function render(array $params = array())
+	public function render(array $params = array(), $return=false)
 	{
 		try 
 		{
@@ -763,7 +766,12 @@ class Attire
 				$params['views'] = $this->_views;			
 				
 				$template = $this->_environment->loadTemplate($master);
-				echo $template->render($params); 	
+
+				// add return feature
+				if( $return )
+					return $template->render($params);	 	
+				
+				echo $template->render($params);
 			}
 			else
 			{
