@@ -1,5 +1,5 @@
 {
-    "name": "yespbs/attire",
+    "name": "dsv/attire",
     "description": "Attire is an implementation of Twig template engine combined with Sprockets-PHP asset pipeline manager for CodeIgniter v3.0.x",
     "type": "codeigniter-library",
      "keywords": [
