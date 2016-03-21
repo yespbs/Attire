@@ -404,7 +404,7 @@ class Attire
 					{
 						$template_dirs[] = $this->theme_path.$theme_name;
 					}
-					// add withing VIEWPATH include feature
+					// add within VIEWPATH include feature, view within view using {% include('path/to/view') %}
 					$template_dirs[] = VIEWPATH;
 
 					$template_dirs[] = APPPATH.'libraries/attire/dist/template';
